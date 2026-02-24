@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Dark rounded background -->
+  <rect width="100" height="100" rx="20" fill="#0f1117"/>
+  <!-- < left bracket -->
+  <polyline
+    points="32,18 10,50 32,82"
+    stroke="#f59e0b"
+    stroke-width="9"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <!-- / forward slash -->
+  <line
+    x1="60" y1="18"
+    x2="40" y2="82"
+    stroke="#f59e0b"
+    stroke-width="9"
+    stroke-linecap="round"
+  />
+  <!-- > right bracket -->
+  <polyline
+    points="68,18 90,50 68,82"
+    stroke="#f59e0b"
+    stroke-width="9"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

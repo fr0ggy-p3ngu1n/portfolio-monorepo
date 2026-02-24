@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary -->
+    <title>Matthew Sullivan | Software Engineer</title>
+    <meta name="description" content="Full-stack software engineer specialising in React, TypeScript, and Cloudflare. Currently building at EHMA.ai." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- WebKit scrollbar (inline to bypass Tailwind CSS optimizer which strips ::-webkit- prefix) -->
+    <style>
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: var(--bg-surface, #161a28); }
+      ::-webkit-scrollbar-thumb { background: var(--bd-primary, #2a2d3e); border-radius: 9999px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--tx-amber, #f59e0b); }
+    </style>
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://matthewsullivan.dev" />
+    <meta property="og:title"       content="Matthew Sullivan — Full-Stack Software Engineer" />
+    <meta property="og:description" content="Full-stack software engineer specialising in React, TypeScript, and Cloudflare. Currently building at EHMA.ai." />
+    <meta property="og:image"       content="%VITE_API_URL%/api/og" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type"   content="image/png" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Matthew Sullivan — Full-Stack Software Engineer" />
+    <meta name="twitter:description" content="Full-stack software engineer specialising in React, TypeScript, and Cloudflare. Currently building at EHMA.ai." />
+    <meta name="twitter:image"       content="%VITE_API_URL%/api/og" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "17b563c344ab4adc9c307833c5792dec"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

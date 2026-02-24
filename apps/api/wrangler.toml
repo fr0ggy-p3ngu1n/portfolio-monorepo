@@ -1,0 +1,23 @@
+name = "portfolio-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Bundle .wasm files as pre-compiled WebAssembly modules.
+# Cloudflare Workers disallows runtime WASM compilation (WebAssembly.compile /
+# WebAssembly.instantiate with raw bytes), so all WASM must be bundled at build
+# time. Wrangler then provides each import as a WebAssembly.Module at runtime.
+[[rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]
+fallthrough = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio-db"
+database_id = "4a2d2335-ca4f-49d7-88a4-ec575d101d14"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "portfolio-assets"

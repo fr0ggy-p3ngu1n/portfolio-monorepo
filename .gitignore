@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.output/
+
+# Wrangler local state (D1, KV, R2 miniflare storage + cache)
+.wrangler/
+
+# Local Worker secrets — never commit
+.dev.vars
+.dev.vars.*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# pnpm
+.pnpm-store/
+
+# Resume PDF — served from Cloudflare R2 in production
+apps/web/public/resume.pdf

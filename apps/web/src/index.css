@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base:     #0f1117;
+  --bg-surface:  #161a28;
+  --bg-header:   #0c0f1d;
+  --bd-primary:  #2a2d3e;
+  --bd-secondary:#1e2130;
+  --tx-primary:  #f1f5f9;
+  --tx-secondary:#94a3b8;
+  --tx-muted:    #64748b;
+  --tx-amber:    #f59e0b;
+}
+
+html.light {
+  --bg-base:     #ffffff;
+  --bg-surface:  #f8fafc;
+  --bg-header:   #ffffff;
+  --bd-primary:  #e2e8f0;
+  --bd-secondary:#cbd5e1;
+  --tx-primary:  #0f172a;
+  --tx-secondary:#475569;
+  --tx-muted:    #94a3b8;
+  --tx-amber:    #92400e;
+}
+
+@theme inline {
+  --color-bg-base:     var(--bg-base);
+  --color-bg-surface:  var(--bg-surface);
+  --color-bg-header:   var(--bg-header);
+  --color-bd-primary:  var(--bd-primary);
+  --color-bd-secondary:var(--bd-secondary);
+  --color-tx-primary:  var(--tx-primary);
+  --color-tx-secondary:var(--tx-secondary);
+  --color-tx-muted:    var(--tx-muted);
+  --color-tx-amber:    var(--tx-amber);
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-base);
+  color: var(--tx-primary);
+
+}
+
+/* Remove tap highlight flash on touchscreens */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove 300ms double-tap zoom delay on interactive elements */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Respect system "Reduce Motion" preference for CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom scrollbar — Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bd-primary) var(--bg-surface);
+}
+/* WebKit scrollbar rules live in index.html <style> tag to bypass Tailwind's CSS optimizer */
+
+/* Header frosted background */
+.header-bg {
+  background-color: var(--bg-header);
+  background-color: color-mix(in srgb, var(--bg-header) 90%, transparent);
+}
+
+/* Light mode glass overrides */
+html.light .glass {
+  background: linear-gradient(160deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.02) 100%);
+  border: 1px solid rgba(0,0,0,0.09);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+html.light .glass-modal {
+  background: linear-gradient(160deg, rgba(255,255,255,0.97) 0%, rgba(248,250,252,0.98) 100%);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+}
+html.light .glass-amber {
+  background: linear-gradient(160deg, rgba(217,119,6,0.22) 0%, rgba(180,83,9,0.12) 100%);
+  border: 1px solid rgba(217,119,6,0.45);
+  box-shadow: 0 4px 20px rgba(217,119,6,0.2), inset 0 1px 0 rgba(255,200,50,0.3);
+  color: #92400e;
+}
+html.light .glass-amber:hover {
+  color: #78350f;
+}
+
+/* Skill / project tag pills */
+.tag {
+  background: linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(245,158,11,0.38);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+html.light .tag {
+  background: linear-gradient(160deg, rgba(245,158,11,0.10) 0%, rgba(217,119,6,0.05) 100%);
+  border: 1px solid rgba(146,64,14,0.32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+@keyframes dot-drift {
+  from { background-position: 0px 0px; }
+  to   { background-position: 28px 28px; }
+}
+
+@keyframes gradient-sweep {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.animate-dot-drift {
+  animation: dot-drift 8s linear infinite;
+}
+
+.animate-gradient-sweep {
+  background-size: 200% 200%;
+  animation: gradient-sweep 5s ease infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer-sweep 2.2s ease-in-out infinite;
+}
+
+.animate-blink {
+  animation: cursor-blink 0.75s step-end infinite;
+}
+
+/* ── Ring Runner game modal ─────────────────────────────────────── */
+/* Mobile: transparent — game canvas sits directly on the sky-gradient backdrop.
+   Desktop (sm+): full glass-modal treatment with rounded corners. */
+.ring-runner-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+@media (min-width: 640px) {
+  .ring-runner-card {
+    background: linear-gradient(160deg, rgba(22, 26, 40, 0.97) 0%, rgba(15, 17, 23, 0.98) 100%);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* ── Liquid Glass ───────────────────────────────────────────────── */
+
+/* Opaque variant for modals — enough blur for glass feel, dark enough to read */
+.glass-modal {
+  background: linear-gradient(
+    160deg,
+    rgba(22, 26, 40, 0.97) 0%,
+    rgba(15, 17, 23, 0.98) 100%
+  );
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+.glass {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.glass-amber {
+  background: linear-gradient(
+    160deg,
+    rgba(245, 158, 11, 0.22) 0%,
+    rgba(217, 119, 6, 0.10) 100%
+  );
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow:
+    0 4px 20px rgba(217, 119, 6, 0.25),
+    inset 0 1px 0 rgba(255, 200, 50, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
