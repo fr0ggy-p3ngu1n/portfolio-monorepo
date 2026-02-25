@@ -14,7 +14,7 @@ app.get('/', async (c) => {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename="Matthew Sullivan - Resume.pdf"',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, max-age=604800',  // 7 days; replaced via admin upload
     },
   });
 });

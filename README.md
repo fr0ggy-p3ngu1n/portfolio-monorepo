@@ -9,9 +9,9 @@ Personal portfolio and live full-stack demo.
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite 6, TypeScript 5 |
+| Frontend | React 18, Vite 6, TypeScript 5 |
 | Styling | Tailwind CSS v4, CSS custom properties |
-| Animations | Framer Motion 12 |
+| Animations | Framer Motion 11 |
 | Backend | Hono 4 on Cloudflare Workers |
 | Database | Cloudflare D1 (SQLite edge DB) + Prisma |
 | File Storage | Cloudflare R2 (resume PDF) |
@@ -46,7 +46,7 @@ portfolio/
 │   └── api/               # Hono REST API (Cloudflare Workers)
 │       └── src/
 │           ├── middleware/        # CORS, adminAuth (JWT guard)
-│           └── routes/            # auth, projects, contact, resume
+│           └── routes/            # auth, projects, contact, resume, og, leaderboard
 └── packages/
     └── shared/            # Zod schemas + TypeScript types (consumed by both apps)
 ```
@@ -108,9 +108,11 @@ There are **6 hidden easter eggs** — all LOTR themed. None are mentioned anywh
 - 🦅 Nazgûl fell beasts appear as aerial obstacles after score 100
 - All sounds are synthesized with the Web Audio API (no audio files): jump blip, death sequence, milestone fanfare (C5→E5→G5→C6), Nazgûl shriek with LFO vibrato
 - Score milestones at 100, 500, and 1000 play a fanfare
-- High score persists for the session
+- Speed ramps up gradually (linear, Google-dino style) from 5.5 → 13 px/frame over ~4 minutes
+- **Persistent shared leaderboard** — top 10 scores stored in D1; on death, players with a qualifying score are prompted for a 3-character name before seeing the Hall of Fame
+- **🏆 Hall of Fame button** in the game header — view the board at any time before playing
 - **Desktop:** Space / ↑ arrow to jump, ESC to close, click the canvas to jump
-- **Mobile:** Tap anywhere on screen to jump; only the ✕ button closes the game
+- **Mobile:** Square `aspect-square` canvas wrapper — the wide game canvas is letterboxed with the sky colour, giving a much larger play area. Tap anywhere to jump; only the ✕ and 🏆 buttons don't trigger a jump
 - **Idle prompt:** "Run, you fools!" / **Death screen:** "YOU SHALL NOT PASS! 🔥"
 
 ### 👁️ F — The Eye of Sauron (idle detection)
@@ -160,6 +162,8 @@ pnpm dev
 | GET | `/api/resume` | — | Stream resume PDF from R2 |
 | PUT | `/api/resume` | JWT | Replace resume PDF in R2 |
 | GET | `/api/og` | — | Dynamic 1200×630 OG image (PNG) |
+| GET | `/api/leaderboard` | — | Top 10 Ring Runner scores |
+| POST | `/api/leaderboard` | — | Submit a score (server-side qualification check) |
 
 ---
 
@@ -219,7 +223,7 @@ All colors are CSS custom properties on `:root` (dark defaults), overridden on `
 
 ### 3-D Tilt Effect (`src/hooks/useTilt.ts`)
 - **Desktop:** `mousemove` computes cursor position relative to card center → `perspective(700px) rotateX rotateY`
-- **Mobile:** A module-level singleton registers all tilt cards in a `Set<HTMLElement>`. One `deviceorientation` listener updates every registered element. iOS requires `DeviceOrientationEvent.requestPermission()` from a user gesture; `GyroPermission.tsx` handles the prompt.
+- **Mobile:** A module-level singleton registers all tilt cards in a `Set<HTMLElement>`. Uses a **delta-based** (velocity) model rather than absolute orientation: each `deviceorientation` event computes the *change* in gamma/beta since the last reading and accumulates that into `targetX/Y`, clamped to ±1. A `requestAnimationFrame` loop decays the target toward zero each frame (cards spring back to flat when still) and lerps `currentX/Y` toward the target (smooths rendering). This means any static hold angle — phone straight up, tilted, lying in bed — reads as neutral; only active movement produces tilt. iOS requires `DeviceOrientationEvent.requestPermission()` from a user gesture; `GyroPermission.tsx` handles the prompt.
 
 ### Smooth Scroll (`src/lib/smoothScroll.ts`)
 Custom `requestAnimationFrame` loop with `easeInOutCubic`. Duration is adaptive: `clamp(distance × 0.6ms, 500ms, 900ms)`. Used by all nav links, the Back to Top button, and hero CTAs instead of native `scroll-behavior: smooth`.
@@ -237,4 +241,10 @@ Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wra
 On any error the route issues a 302 to the static `/og-image.png` fallback on Cloudflare Pages, so social cards never break.
 
 ### Resume Storage
-The resume PDF lives in a Cloudflare R2 bucket (`portfolio-assets`). `GET /api/resume` streams it publicly; `PUT /api/resume` is JWT-protected and accepts a multipart form upload. Updating the resume requires no redeployment.
+The resume PDF lives in a Cloudflare R2 bucket (`portfolio-assets`). `GET /api/resume` streams it publicly with a 7-day `Cache-Control`; `PUT /api/resume` is JWT-protected and accepts a multipart form upload. Updating the resume requires no redeployment.
+
+### Performance
+- **Code splitting** — Admin routes (`Login`, `Dashboard`, `ProjectForm`, `AdminLayout`) are `React.lazy()` + `Suspense`. Non-admin visitors never download that code. Vite `manualChunks` splits React/Router and Framer Motion into separately cached vendor chunks; the main app chunk went from 472 KB → 132 KB (gzip: 146 KB → 37 KB).
+- **HTTP caching** — `GET /api/projects`: 5 min `public` cache. `GET /api/leaderboard`: 60 s `public` cache. `GET /api/resume`: 7-day `public` cache.
+- **Image lazy loading** — off-screen images (`loading="lazy" decoding="async"`) defer fetching until near the viewport.
+- **React rendering** — `ProjectCard` and `SkillCard` are wrapped in `memo()` to skip re-renders from unrelated state changes (theme toggle, nav intersection, etc.).

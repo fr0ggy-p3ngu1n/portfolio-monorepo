@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { api } from '../../lib/api';
 import type { Project } from '@portfolio/shared';
@@ -13,7 +13,7 @@ const LOTR_QUOTES = [
   '"A wizard is never late, nor is he early. He arrives precisely when he means to." — Gandalf',
 ];
 
-function ProjectCard({ project, index, onSelect, onWizard }: {
+const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWizard }: {
   project: Project;
   index: number;
   onSelect: (p: Project) => void;
@@ -57,6 +57,8 @@ function ProjectCard({ project, index, onSelect, onWizard }: {
         <img
           src={project.imageUrl}
           alt={project.title}
+          loading="lazy"
+          decoding="async"
           className="w-full h-48 object-cover"
         />
       )}
@@ -114,7 +116,7 @@ function ProjectCard({ project, index, onSelect, onWizard }: {
       </div>
     </motion.article>
   );
-}
+});
 
 export default function Projects() {
   const [projects, setProjects]   = useState<Project[]>([]);

@@ -25,10 +25,10 @@ const INTERESTS: Interest[] = [
       'Gaming has been a lifelong passion — from deep RPG narratives to competitive multiplayer. A great game after a long sprint is the perfect reset.',
   },
   {
-    icon: '🐈‍⬛',
+    icon: '🪿',
     title: 'Cat Dad',
     description:
-      'My cat is the undisputed CEO of the home office — an expert in walking across keyboards and demanding attention during standups.',
+      'Goose, my grey and white cat, is the undisputed CEO of the home office — an expert in walking across keyboards and demanding attention during standups.',
   },
   {
     icon: '☕',

@@ -19,7 +19,7 @@ app.get('/', async (c) => {
   const projects = await db.project.findMany({
     orderBy: [{ featured: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
   });
-  return c.json(projects.map(parse));
+  return c.json(projects.map(parse), 200, { 'Cache-Control': 'public, max-age=300' });  // 5 min
 });
 
 app.get('/:id', async (c) => {

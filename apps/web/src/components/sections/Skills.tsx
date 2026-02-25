@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, memo } from 'react';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useTilt } from '../../hooks/useTilt';
 
@@ -102,7 +102,7 @@ function PythonItem() {
   );
 }
 
-function SkillCard({ category, icon, description, items }: typeof SKILLS[number]) {
+const SkillCard = memo(function SkillCard({ category, icon, description, items }: typeof SKILLS[number]) {
   const { ref, onMouseMove, onMouseLeave } = useTilt();
   return (
     <motion.div
@@ -134,7 +134,7 @@ function SkillCard({ category, icon, description, items }: typeof SKILLS[number]
       </div>
     </motion.div>
   );
-}
+});
 
 export default function Skills() {
   const ref = useRef(null);

@@ -19,6 +19,8 @@ function LinkedInCard() {
         <img
           src="/avatar.jpg"
           alt="Matthew Sullivan"
+          loading="lazy"
+          decoding="async"
           className="w-14 h-14 rounded-full object-cover object-top shrink-0 border-2 border-amber-500/30"
         />
         <div>

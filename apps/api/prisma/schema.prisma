@@ -29,3 +29,10 @@ model ContactSubmission {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  name      String
+  score     Int
+  createdAt DateTime @default(now())
+}

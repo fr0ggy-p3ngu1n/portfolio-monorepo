@@ -3,8 +3,9 @@ import { cors } from './middleware/cors';
 import authRoutes from './routes/auth';
 import projectRoutes from './routes/projects';
 import contactRoutes from './routes/contact';
-import resumeRoutes from './routes/resume';
-import ogRoutes     from './routes/og';
+import resumeRoutes      from './routes/resume';
+import ogRoutes          from './routes/og';
+import leaderboardRoutes from './routes/leaderboard';
 
 export type Bindings = {
   DB: D1Database;
@@ -25,6 +26,7 @@ app.route('/api/auth', authRoutes);
 app.route('/api/projects', projectRoutes);
 app.route('/api/contact', contactRoutes);
 app.route('/api/resume', resumeRoutes);
-app.route('/api/og',     ogRoutes);
+app.route('/api/og',          ogRoutes);
+app.route('/api/leaderboard', leaderboardRoutes);
 
 export default app;
