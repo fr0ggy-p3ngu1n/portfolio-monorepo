@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@cf-wasm/resvg": "^0.3.3",
-    "@hono/zod-validator": "^0.4.1",
+    "@hono/zod-validator": "^0.7.0",
     "@portfolio/shared": "workspace:*",
     "@prisma/adapter-d1": "^7.0.0",
     "@prisma/client": "^7.0.0",
@@ -23,7 +23,7 @@
     "hono": "^4.12.2",
     "resend": "^6.0.0",
     "satori": "^0.19.2",
-    "zod": "^3.23.8"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260304.0",

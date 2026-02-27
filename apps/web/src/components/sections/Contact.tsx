@@ -74,7 +74,7 @@ export default function Contact() {
     e.preventDefault();
     const result = CreateContactSchema.safeParse(form);
     if (!result.success) {
-      const first = result.error.errors[0];
+      const first = result.error.issues[0];
       setErrorMsg(first?.message ?? 'Please check your inputs and try again.');
       setStatus('error');
       return;
