@@ -16,20 +16,19 @@
     "@cf-wasm/resvg": "^0.3.3",
     "@hono/zod-validator": "^0.4.1",
     "@portfolio/shared": "workspace:*",
-    "@prisma/adapter-d1": "^6.3.0",
-    "@prisma/client": "^6.3.0",
+    "@prisma/adapter-d1": "^7.0.0",
+    "@prisma/client": "^7.0.0",
     "@resvg/resvg-wasm": "^2.6.2",
-    "bcryptjs": "^2.4.3",
-    "hono": "^4.7.0",
-    "resend": "^4.0.1",
+    "bcryptjs": "^3.0.0",
+    "hono": "^4.12.2",
+    "resend": "^6.0.0",
     "satori": "^0.19.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250109.0",
-    "@types/bcryptjs": "^2.4.6",
-    "prisma": "^6.3.0",
+    "@cloudflare/workers-types": "^4.20260304.0",
+    "prisma": "^7.0.0",
     "typescript": "^5.7.2",
-    "wrangler": "^4.67.0"
+    "wrangler": "^4.68.0"
   }
 }

@@ -70,7 +70,7 @@ async function ensureInit() {
 // the layout definition below readable without needing JSX or React at runtime.
 
 type Style    = Record<string, string | number>;
-type AnyChild = ReturnType<typeof div> | ReturnType<typeof span> | ReturnType<typeof img> | string | null;
+type AnyChild = object | string | null;
 
 function div(style: Style, ...children: AnyChild[]): object {
   return {
