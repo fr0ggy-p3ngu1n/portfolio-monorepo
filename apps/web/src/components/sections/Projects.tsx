@@ -4,6 +4,87 @@ import { api } from '../../lib/api';
 import type { Project } from '@portfolio/shared';
 import { useTilt } from '../../hooks/useTilt';
 
+const TECH_NOTES = [
+  {
+    title: 'Gyroscope tilt model',
+    body: 'Mobile tilt uses a delta-based (velocity) model rather than absolute orientation. Each deviceorientation event computes the change in gamma/beta since the last reading and accumulates into targetX/Y, clamped to ±1. A rAF loop decays the target toward zero each frame (cards spring back to flat when still) and lerps currentX/Y toward the target for smooth rendering. This means any static hold angle — phone straight up, tilted, lying in bed — reads as neutral; only active movement produces tilt. iOS requires DeviceOrientationEvent.requestPermission() from a user gesture, handled by a dedicated GyroPermission component.',
+  },
+  {
+    title: 'Dynamic OG image (WASM pipeline)',
+    body: 'GET /api/og returns a 1200×630 PNG for og:image. The pipeline: satori/standalone converts a JSX-like element tree to SVG using Inter font data fetched from jsDelivr at cold-start; @cf-wasm/resvg/workerd renders that SVG to PNG via a Rust-powered WebAssembly renderer. Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wrangler\'s CompiledWasm rule. Cloudflare Workers blocks runtime WASM compilation from raw bytes but allows instantiation of pre-compiled WebAssembly.Module objects. The yoga WASM binary is extracted from yoga-layout\'s base64-embedded bundle so its Emscripten glue code matches exactly. On any error the route issues a 302 to the static /og-image.png fallback.',
+  },
+  {
+    title: 'Audio synthesis (no audio files)',
+    body: 'All game sounds are synthesized at runtime using the Web Audio API — jump blip, death sequence, milestone fanfare (C5→E5→G5→C6), and a Nazgûl shriek with LFO vibrato. AudioContext is a lazy singleton because browsers require a user gesture before audio can start. The fanfare uses an OscillatorNode sequence scheduled with audioCtx.currentTime offsets; the Nazgûl shriek layers a sawtooth oscillator with a low-frequency oscillator modulating its frequency for vibrato.',
+  },
+];
+
+function TechNote() {
+  const [open, setOpen] = useState(false);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  return (
+    <div className="mt-5 border-t border-white/10 pt-4">
+      <button
+        onClick={() => { setOpen(o => !o); if (open) setExpandedIdx(null); }}
+        className="flex items-center justify-between w-full text-left group cursor-pointer"
+      >
+        <span className="text-xs font-semibold text-tx-amber tracking-wider uppercase">Technical Notes</span>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="text-tx-muted text-xs"
+        >
+          ▾
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div className="mt-3 space-y-2">
+              {TECH_NOTES.map((note, i) => (
+                <div key={note.title} className="glass rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setExpandedIdx(expandedIdx === i ? null : i)}
+                    className="flex items-center justify-between w-full px-3 py-2 text-left cursor-pointer"
+                  >
+                    <span className="text-xs font-medium text-tx-secondary">{note.title}</span>
+                    <motion.span
+                      animate={{ rotate: expandedIdx === i ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-tx-muted text-xs shrink-0 ml-2"
+                    >
+                      ▾
+                    </motion.span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {expandedIdx === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden' }}
+                      >
+                        <p className="px-3 pb-3 text-xs text-tx-muted leading-relaxed">{note.body}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 const LOTR_QUOTES = [
   '"Not all those who wander are lost." — J.R.R. Tolkien',
   '"Even the smallest person can change the course of the future." — Galadriel',
@@ -255,7 +336,9 @@ export default function Projects() {
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-4 border-t border-white/10">
+                {selected.title === 'Personal Portfolio' && <TechNote />}
+
+                <div className="flex gap-3 pt-4 border-t border-white/10 mt-5">
                   {selected.url && (
                     <a
                       href={selected.url}
