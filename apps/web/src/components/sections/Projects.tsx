@@ -39,7 +39,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
       }}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="glass rounded-xl overflow-hidden cursor-pointer relative"
+      className="glass rounded-xl overflow-hidden cursor-pointer relative flex flex-col"
     >
       {/* Easter Egg J */}
       {index === 0 && (
@@ -62,7 +62,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
           className="w-full h-48 object-cover"
         />
       )}
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between mb-2 gap-2">
           <h3 className="font-semibold text-tx-primary">{project.title}</h3>
           {project.featured && (
@@ -86,32 +86,30 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
             ))}
           </div>
         )}
-        <div className="flex items-center justify-between">
-          <div className="flex gap-4">
-            {project.url && (
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-sm text-tx-amber hover:underline"
-              >
-                Live site ↗
-              </a>
-            )}
-            {project.repoUrl && (
-              <a
-                href={project.repoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-sm text-tx-secondary hover:underline"
-              >
-                GitHub ↗
-              </a>
-            )}
-          </div>
-          <span className="text-xs text-tx-muted">Click to expand</span>
+        <div className="flex items-center gap-4 mt-auto">
+          {project.url && (
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm text-tx-amber hover:underline"
+            >
+              Live site ↗
+            </a>
+          )}
+          {project.repoUrl && (
+            <a
+              href={project.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm text-tx-secondary hover:underline"
+            >
+              GitHub ↗
+            </a>
+          )}
+          <span className="text-xs text-tx-muted ml-auto">Click to expand</span>
         </div>
       </div>
     </motion.article>

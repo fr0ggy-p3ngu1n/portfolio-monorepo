@@ -24,10 +24,14 @@ const JOBS: Job[] = [
       {
         title: 'Full-Stack Software Engineer',
         bullets: [
-          'Building wAve — an AI-powered platform that streamlines and brings solar purchasing direct to consumers.',
-          'Developing full-stack features across the React frontend and backend services.',
-          'Leverages GitHub Copilot and Claude daily to accelerate development, improve code quality, and reduce time spent on boilerplate.',
-          'Works in a fast-moving startup environment, contributing across the stack from UI to API design.',
+          'Grew backend test coverage from 393 to 3,646 tests (828% increase) while shipping features in parallel.',
+          'Reduced API P50 response time from 18,000ms to 316ms and polygon query time from 33s to 279ms (100× improvement).',
+          'Zero-downtime migration of 556K leads and 1,550 users from MongoDB Atlas to Azure Cosmos DB vCore.',
+          'Built CI/CD gated pipelines across 4 repositories — backend, frontend, mobile, and HR portal.',
+          'Shipped iOS v1.9.3, v1.9.4, and v1.9.5 via an automated TestFlight pipeline built from scratch.',
+          'Led full PII security overhaul — Azure Key Vault envelope encryption (AES-256/RSA-2048), zero plaintext sensitive data remaining.',
+          'Built entire monitoring and alerting system across 3 Azure Function Apps and 6 Slack channels.',
+          'Built a persistent Claude Code memory system with 75 files and ~5,500 lines of institutional knowledge.',
         ],
       },
     ],

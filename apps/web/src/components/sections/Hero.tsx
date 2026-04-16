@@ -134,26 +134,47 @@ export default function Hero() {
             <span className="animate-blink ml-0.5">|</span>
           </motion.p>
 
-          <motion.p
-            className="text-xl text-tx-secondary mb-10 leading-relaxed"
+          <motion.div
+            className="text-xl text-tx-secondary mb-10 leading-relaxed space-y-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.72 }}
           >
-            Full-stack software engineer currently building at{' '}
-            <a
-              href="https://landing.ehma.ai/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-tx-amber hover:underline"
-            >
-              EHMA.ai
-            </a>
-            . My background spans embedded systems, Salesforce development, manufacturing
-            software, and SQA — with a consistent focus on delivering quality software
-            that ships. I actively leverage AI tools like GitHub Copilot and Claude to
-            accelerate development and sharpen my workflow.
-          </motion.p>
+            <p>
+              I started my career in embedded systems and manufacturing software — environments
+              where reliability isn&apos;t optional and the hardware doesn&apos;t forgive mistakes.
+              That foundation shapes how I think about software today.
+            </p>
+            <p>
+              At{' '}
+              <a
+                href="https://landing.ehma.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-tx-amber hover:underline"
+              >
+                EHMA.ai
+              </a>{' '}
+              I build and own wAve — an AI-powered solar sales platform — across the full stack.
+              In 11 weeks I helped take the platform from no CI/CD, no monitoring, and silent
+              failures everywhere to production-grade: 828% increase in test coverage, API
+              response times from 18 seconds to 316ms, zero-downtime database migration of
+              556K records, and a full PII security overhaul.
+            </p>
+            <p>
+              Outside of work I&apos;m building{' '}
+              <a
+                href="https://sproutaac.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-tx-amber hover:underline"
+              >
+                Sprout AAC
+              </a>{' '}
+              — a free, open-source communication app for children who communicate differently.
+              Commercial alternatives cost $150–$250. They shouldn&apos;t have to.
+            </p>
+          </motion.div>
 
           <motion.div
             className="flex flex-wrap gap-4"

@@ -16,13 +16,13 @@ export default function Dashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       api.get<Project[]>('/api/projects'),
       api.get<ContactSubmission[]>('/api/contact'),
     ])
       .then(([p, c]) => {
-        setProjects(p);
-        setContacts(c);
+        if (p.status === 'fulfilled') setProjects(p.value);
+        if (c.status === 'fulfilled') setContacts(c.value);
       })
       .finally(() => setLoading(false));
   }, []);
