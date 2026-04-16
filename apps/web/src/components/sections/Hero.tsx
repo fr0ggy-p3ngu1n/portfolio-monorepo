@@ -6,6 +6,8 @@ const NAME_WORDS = ['Matthew', 'Sullivan'];
 
 const ROLES = [
   'Full-Stack Engineer',
+  'Platform Engineer',
+  'iOS Developer',
   'Embedded Systems Developer',
   'Salesforce Developer',
   'SQA Developer',

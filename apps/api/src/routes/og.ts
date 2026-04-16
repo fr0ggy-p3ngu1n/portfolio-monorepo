@@ -97,7 +97,7 @@ function buildOG(): object {
   const SLATE  = '#94a3b8';
   const MUTED  = '#64748b';
   const BG     = '#0f1117';
-  const TAGS   = ['React', 'TypeScript', 'Cloudflare', 'Hono'];
+  const TAGS   = ['React', '.NET', 'Azure', 'iOS'];
 
   return div(
     // Root — full canvas, dark background with the same amber dot-grid used in the hero

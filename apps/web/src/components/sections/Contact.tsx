@@ -26,7 +26,7 @@ function LinkedInCard() {
         <div>
           <p className="font-bold text-tx-primary">Matthew Sullivan</p>
           <p className="text-tx-secondary text-sm leading-snug">Full-Stack Software Engineer</p>
-          <p className="text-tx-muted text-xs mt-0.5">Building at EHMA.ai</p>
+          <p className="text-tx-muted text-xs mt-0.5">Full-Stack Engineer at EHMA.ai</p>
         </div>
       </div>
 
