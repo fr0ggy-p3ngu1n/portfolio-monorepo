@@ -16,6 +16,9 @@ dist/
 .env
 .env.*
 !.env.example
+# VITE_ vars are baked into the public client bundle anyway — not a secret,
+# and CI needs it committed since it can't read a local-only file
+!apps/web/.env.production
 
 # Editor / OS
 .DS_Store
