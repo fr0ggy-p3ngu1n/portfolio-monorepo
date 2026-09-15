@@ -42,7 +42,21 @@ app.post('/', zValidator('json', SubmitScoreSchema), async (c) => {
     data: { name, score },
   });
 
-  // Re-fetch top 10 after insert
+  // Prune anything that's fallen out of the top 10 — otherwise every
+  // qualifying score ever submitted accumulates in the table forever,
+  // even though only the top 10 are ever read.
+  const toPrune = await db.leaderboardEntry.findMany({
+    orderBy: { score: 'desc' },
+    skip:    10,
+    select:  { id: true },
+  });
+  if (toPrune.length > 0) {
+    await db.leaderboardEntry.deleteMany({
+      where: { id: { in: toPrune.map((e) => e.id) } },
+    });
+  }
+
+  // Re-fetch top 10 after insert + prune
   const entries = await db.leaderboardEntry.findMany({
     orderBy: { score: 'desc' },
     take:    10,

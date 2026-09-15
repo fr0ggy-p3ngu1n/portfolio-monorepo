@@ -11,6 +11,7 @@ type FormState = {
   imageUrl: string;
   tags: string;
   featured: boolean;
+  published: boolean;
   order: number;
 };
 
@@ -22,6 +23,7 @@ const EMPTY: FormState = {
   imageUrl: '',
   tags: '',
   featured: false,
+  published: true,
   order: 0,
 };
 
@@ -33,6 +35,7 @@ export default function ProjectForm() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
+  const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -48,8 +51,15 @@ export default function ProjectForm() {
           imageUrl: p.imageUrl ?? '',
           tags: Array.isArray(p.tags) ? p.tags.join(', ') : '',
           featured: p.featured,
+          published: p.published,
           order: p.order,
         });
+      })
+      .catch((err) => {
+        // Deliberately don't fall through to an editable empty form here —
+        // that would let a transient load failure turn into a submit that
+        // silently overwrites the real project with blank data.
+        setLoadError(err instanceof Error ? err.message : 'Failed to load project');
       })
       .finally(() => setFetching(false));
   }, [id]);
@@ -72,6 +82,7 @@ export default function ProjectForm() {
         .map((t) => t.trim())
         .filter(Boolean),
       featured: form.featured,
+      published: form.published,
       order: form.order,
     };
     try {
@@ -90,6 +101,20 @@ export default function ProjectForm() {
 
   if (fetching) {
     return <div className="text-center py-12 text-gray-500">Loading…</div>;
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-2xl text-center py-12">
+        <p className="text-red-600 mb-4">Couldn't load this project: {loadError}</p>
+        <button
+          onClick={() => navigate('/admin')}
+          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Back to dashboard
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -184,6 +209,20 @@ export default function ProjectForm() {
           />
           <label htmlFor="featured" className="text-sm font-medium text-gray-700">
             Featured project
+          </label>
+        </div>
+
+        {/* Published */}
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="published"
+            checked={form.published}
+            onChange={(e) => set('published', e.target.checked)}
+            className="rounded"
+          />
+          <label htmlFor="published" className="text-sm font-medium text-gray-700">
+            Published <span className="font-normal text-gray-500">(unpublished projects are hidden from the public site, but you can still preview and edit them here)</span>
           </label>
         </div>
 

@@ -1,6 +1,20 @@
-import { getToken } from './token';
+import { getToken, removeToken } from './token';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
+
+// Login intentionally returns 401 for a wrong password — that's a normal,
+// inline-handled outcome (see Login.tsx), not an expired session, so it
+// must not trigger the global redirect below.
+const LOGIN_PATH = '/api/auth/login';
+
+function handleUnauthorized(path: string) {
+  if (path === LOGIN_PATH) return;
+  if (!getToken()) return; // wasn't an authenticated request anyway
+  removeToken();
+  if (window.location.pathname !== '/admin/login') {
+    window.location.href = '/admin/login';
+  }
+}
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
@@ -16,6 +30,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
 
   if (!res.ok) {
+    if (res.status === 401) handleUnauthorized(path);
     const body = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error((body as { error: string }).error ?? 'Request failed');
   }
@@ -31,6 +46,7 @@ async function upload<T>(path: string, formData: FormData): Promise<T> {
     body: formData,
   });
   if (!res.ok) {
+    if (res.status === 401) handleUnauthorized(path);
     const body = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error((body as { error: string }).error ?? 'Request failed');
   }

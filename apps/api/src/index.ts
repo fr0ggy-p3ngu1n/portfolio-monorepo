@@ -6,6 +6,7 @@ import contactRoutes from './routes/contact';
 import resumeRoutes      from './routes/resume';
 import ogRoutes          from './routes/og';
 import leaderboardRoutes from './routes/leaderboard';
+import analyticsRoutes   from './routes/analytics';
 
 export type Bindings = {
   DB: D1Database;
@@ -14,6 +15,8 @@ export type Bindings = {
   ADMIN_PASSWORD_HASH: string;
   RESEND_API_KEY: string;
   CONTACT_EMAIL: string;
+  CLOUDFLARE_API_TOKEN: string;
+  CLOUDFLARE_ACCOUNT_ID: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -28,5 +31,6 @@ app.route('/api/contact', contactRoutes);
 app.route('/api/resume', resumeRoutes);
 app.route('/api/og',          ogRoutes);
 app.route('/api/leaderboard', leaderboardRoutes);
+app.route('/api/analytics',   analyticsRoutes);
 
 export default app;

@@ -33,6 +33,14 @@ app.put('/', adminAuth(), async (c) => {
     httpMetadata: { contentType: 'application/pdf' },
   });
 
+  // GET /api/resume is cached for 7 days (Cache-Control below) with no other
+  // invalidation path — without this, a freshly uploaded resume wouldn't
+  // actually be visible to anyone (including this same admin dashboard's
+  // "View current resume" link) until the old cache entry expired on its own.
+  const getUrl = new URL(c.req.url);
+  const cache = caches.default;
+  await cache.delete(new Request(getUrl, { method: 'GET' }));
+
   return c.json({ ok: true });
 });
 

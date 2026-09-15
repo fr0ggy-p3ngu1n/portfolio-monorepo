@@ -11,9 +11,15 @@ const app = new Hono<{ Bindings: Bindings }>();
 // ─── Public: submit contact form ──────────────────────────────────────────────
 
 app.post('/', zValidator('json', CreateContactSchema), async (c) => {
-  const data = c.req.valid('json');
-  const db = createPrismaClient(c.env.DB);
+  const { website, ...data } = c.req.valid('json');
 
+  // Honeypot tripped — pretend it worked (no error, no email, no DB row) so
+  // the bot has no signal that anything was different this time.
+  if (website) {
+    return c.json({ ok: true, id: 'ok' }, 201);
+  }
+
+  const db = createPrismaClient(c.env.DB);
   const submission = await db.contactSubmission.create({ data });
 
   // Fire-and-forget email notification — don't fail the request if Resend errors

@@ -25,7 +25,16 @@ export default function Login() {
     try {
       await login(password);
       navigate('/admin');
-    } catch {
+    } catch (err) {
+      // Rate-limit responses have their own real message ("Too many
+      // attempts...") — showing that plainly is more useful than pretending
+      // it's just another wrong password.
+      const message = err instanceof Error ? err.message : '';
+      if (message.startsWith('Too many attempts')) {
+        setError(message);
+        setLoading(false);
+        return;
+      }
       const next = failCount + 1;
       setFailCount(next);
       if (next >= 3) {

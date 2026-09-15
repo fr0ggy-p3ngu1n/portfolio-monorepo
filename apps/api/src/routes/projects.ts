@@ -17,12 +17,28 @@ function parse(project: { tags: string; [key: string]: unknown }) {
 app.get('/', async (c) => {
   const db = createPrismaClient(c.env.DB);
   const projects = await db.project.findMany({
+    where: { published: true },
     orderBy: [{ featured: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
   });
   return c.json(projects.map(parse), 200, { 'Cache-Control': 'public, max-age=300' });  // 5 min
 });
 
-app.get('/:id', async (c) => {
+// ─── Protected routes (JWT required) ─────────────────────────────────────────
+
+// Admin listing — includes drafts, ordered for display in the dashboard
+// table. Registered before /:id so "all" isn't captured as an :id param.
+app.get('/all', adminAuth(), async (c) => {
+  const db = createPrismaClient(c.env.DB);
+  const projects = await db.project.findMany({
+    orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+  });
+  return c.json(projects.map(parse));
+});
+
+// Single-project lookup is admin-only: it's used exclusively by the edit form,
+// and unlike the list above it must NOT filter by published — the admin needs
+// to be able to load a draft to edit it.
+app.get('/:id', adminAuth(), async (c) => {
   const db = createPrismaClient(c.env.DB);
   const project = await db.project.findUnique({
     where: { id: c.req.param('id') },
@@ -30,8 +46,6 @@ app.get('/:id', async (c) => {
   if (!project) return c.json({ error: 'Not found' }, 404);
   return c.json(parse(project));
 });
-
-// ─── Protected routes (JWT required) ─────────────────────────────────────────
 
 app.post('/', adminAuth(), zValidator('json', CreateProjectSchema), async (c) => {
   const data = c.req.valid('json');

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { playFire } from '../lib/gameAudio';
 
@@ -26,6 +27,9 @@ const RING_INSCRIPTION =
 const IDLE_MS = 1 * 60 * 1000; // Easter Egg F — 1 minute
 
 export default function EasterEggs() {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
+
   const [showRing, setShowRing]   = useState(false); // A
   const [toast, setToast]         = useState<string | null>(null); // B
   const [showEye, setShowEye]     = useState(false); // F
@@ -35,11 +39,14 @@ export default function EasterEggs() {
   const idleTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Restart the idle countdown without hiding the eye (used for mouse/scroll/key activity)
+  // Restart the idle countdown without hiding the eye (used for mouse/scroll/key activity).
+  // The Eye of Sauron is deliberately disabled on /admin — an idle admin
+  // dashboard popping up a jump-scare isn't the vibe while managing content.
   const restartTimer = useCallback(() => {
     if (idleTimer.current) clearTimeout(idleTimer.current);
+    if (isAdmin) return;
     idleTimer.current = setTimeout(() => setShowEye(true), IDLE_MS);
-  }, []);
+  }, [isAdmin]);
 
   // Explicitly dismiss the eye and restart (used only when user clicks the eye)
   const dismissEye = useCallback(() => {
@@ -47,6 +54,10 @@ export default function EasterEggs() {
     setShowEye(false);
     restartTimer();
   }, [restartTimer]);
+
+  useEffect(() => {
+    if (isAdmin) setShowEye(false);
+  }, [isAdmin]);
 
   useEffect(() => {
     restartTimer();

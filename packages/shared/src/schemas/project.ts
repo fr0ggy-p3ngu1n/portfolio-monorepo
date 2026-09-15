@@ -9,6 +9,7 @@ export const ProjectSchema = z.object({
   imageUrl: z.string().url().optional().nullable(),
   tags: z.array(z.string()),
   featured: z.boolean().default(false),
+  published: z.boolean().default(true),
   order: z.number().int().default(0),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

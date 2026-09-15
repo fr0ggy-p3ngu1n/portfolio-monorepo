@@ -15,6 +15,7 @@ model Project {
   imageUrl    String?
   tags        String   // JSON-encoded string array (SQLite has no native array)
   featured    Boolean  @default(false)
+  published   Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -34,4 +35,12 @@ model LeaderboardEntry {
   name      String
   score     Int
   createdAt DateTime @default(now())
+}
+
+model LoginAttempt {
+  id          String   @id @default(cuid())
+  ip          String
+  attemptedAt DateTime @default(now())
+
+  @@index([ip, attemptedAt])
 }

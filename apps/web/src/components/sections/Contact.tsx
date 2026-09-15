@@ -61,7 +61,7 @@ function LinkedInCard() {
 }
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '', website: '' });
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('Something went wrong — please try again.');
 
@@ -83,7 +83,7 @@ export default function Contact() {
     try {
       await api.post('/api/contact', result.data);
       setStatus('success');
-      setForm({ name: '', email: '', message: '' });
+      setForm({ name: '', email: '', message: '', website: '' });
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Something went wrong — please try again.');
       setStatus('error');
@@ -140,6 +140,21 @@ export default function Contact() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="glass rounded-xl p-6 space-y-4"
             >
+              {/* Honeypot — hidden from real users, tabIndex/aria-hidden'd so
+                  screen readers and keyboard nav skip it too. Bots that fill
+                  every field they can find will trip it. */}
+              <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  type="text"
+                  name="website"
+                  value={form.website}
+                  onChange={set('website')}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="contact-name" className="block text-sm font-medium text-tx-secondary mb-1">Name</label>
