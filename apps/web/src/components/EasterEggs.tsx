@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { playFire } from '../lib/gameAudio';
 
@@ -27,9 +26,6 @@ const RING_INSCRIPTION =
 const IDLE_MS = 1 * 60 * 1000; // Easter Egg F — 1 minute
 
 export default function EasterEggs() {
-  const location = useLocation();
-  const isAdmin = location.pathname.startsWith('/admin');
-
   const [showRing, setShowRing]   = useState(false); // A
   const [toast, setToast]         = useState<string | null>(null); // B
   const [showEye, setShowEye]     = useState(false); // F
@@ -42,11 +38,21 @@ export default function EasterEggs() {
   // Restart the idle countdown without hiding the eye (used for mouse/scroll/key activity).
   // The Eye of Sauron is deliberately disabled on /admin — an idle admin
   // dashboard popping up a jump-scare isn't the vibe while managing content.
+  //
+  // This component is mounted as a sibling of <RouterProvider> in App.tsx,
+  // not a descendant of it, so react-router hooks like useLocation() aren't
+  // available here (no Router context in scope) — using one throws and
+  // crashes the whole app. Checking window.location.pathname directly avoids
+  // that entirely, and since this runs on every mousemove/click/keydown/
+  // scroll already, it self-corrects within a moment of any real activity.
   const restartTimer = useCallback(() => {
     if (idleTimer.current) clearTimeout(idleTimer.current);
-    if (isAdmin) return;
+    if (window.location.pathname.startsWith('/admin')) {
+      setShowEye(false);
+      return;
+    }
     idleTimer.current = setTimeout(() => setShowEye(true), IDLE_MS);
-  }, [isAdmin]);
+  }, []);
 
   // Explicitly dismiss the eye and restart (used only when user clicks the eye)
   const dismissEye = useCallback(() => {
@@ -54,10 +60,6 @@ export default function EasterEggs() {
     setShowEye(false);
     restartTimer();
   }, [restartTimer]);
-
-  useEffect(() => {
-    if (isAdmin) setShowEye(false);
-  }, [isAdmin]);
 
   useEffect(() => {
     restartTimer();
