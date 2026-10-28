@@ -43,8 +43,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 header-bg backdrop-blur-sm border-b border-bd-primary">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 text-lg font-bold text-tx-primary">
-          <img src="/favicon.svg" alt="MS" className="w-7 h-7" />
+        <Link to="/" className="flex items-center text-lg font-bold text-tx-primary">
           <span>
             <span className="text-tx-amber">&lt;</span>
             Matthew Sullivan

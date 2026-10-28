@@ -4,7 +4,6 @@ import { router } from './router';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import EasterEggs from './components/EasterEggs';
-import ScrollToTop from './components/ScrollToTop';
 import ScrollProgress from './components/ScrollProgress';
 import BackToTop from './components/BackToTop';
 import CommandPalette from './components/CommandPalette';
@@ -20,7 +19,6 @@ export default function App() {
         <BackToTop />
         <GyroPermission />
         <EasterEggs />
-        <ScrollToTop />
         <RouterProvider router={router} />
       </AuthProvider>
     </ThemeProvider>

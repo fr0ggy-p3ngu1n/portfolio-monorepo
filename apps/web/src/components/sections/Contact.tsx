@@ -25,8 +25,8 @@ function LinkedInCard() {
         />
         <div>
           <p className="font-bold text-tx-primary">Matthew Sullivan</p>
-          <p className="text-tx-secondary text-sm leading-snug">Full-Stack Software Engineer</p>
-          <p className="text-tx-muted text-xs mt-0.5">Full-Stack Developer at EHMA.ai</p>
+          <p className="text-tx-secondary text-sm leading-snug">Full-Stack Developer at EHMA.ai</p>
+          <p className="text-tx-muted text-xs mt-0.5">Arizona</p>
         </div>
       </div>
 
@@ -35,8 +35,8 @@ function LinkedInCard() {
 
       {/* Blurb */}
       <p className="text-tx-secondary text-sm leading-relaxed">
-        Want a quick connection? Find me on LinkedIn — I&apos;m always open to new
-        conversations, collaborations, and opportunities.
+        LinkedIn is the quickest way to reach me. The form works too, and it goes
+        straight to my inbox.
       </p>
 
       {/* CTA */}
@@ -113,7 +113,7 @@ export default function Contact() {
             transition={{ duration: 0.5, delay: 0.2 }}
           />
           <p className="text-tx-secondary text-center mb-10">
-            Have a project in mind or just want to say hello? I&apos;d love to hear from you.
+            Questions about my work, a project, or a role? Send me a note.
           </p>
         </motion.div>
 

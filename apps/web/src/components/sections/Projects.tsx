@@ -121,7 +121,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
       }}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="glass rounded-xl overflow-hidden cursor-pointer relative flex flex-col"
+      className="glass rounded-xl overflow-hidden cursor-pointer relative flex flex-col w-full"
     >
       {/* Easter Egg J */}
       {index === 0 && (
@@ -191,7 +191,6 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
               GitHub ↗
             </a>
           )}
-          <span className="text-xs text-tx-muted ml-auto">Click to expand</span>
         </div>
       </div>
     </motion.article>
@@ -212,6 +211,10 @@ export default function Projects() {
     setWizardQuote(LOTR_QUOTES[Math.floor(Math.random() * LOTR_QUOTES.length)]);
     setWizardOpen(true);
   };
+
+  // Work projects with nothing public to link to go in a compact list under the grid
+  const featured = projects.filter((p) => p.url || p.repoUrl);
+  const earlier  = projects.filter((p) => !p.url && !p.repoUrl);
 
   useEffect(() => {
     api
@@ -262,17 +265,50 @@ export default function Projects() {
         ) : projects.length === 0 ? (
           <p className="text-center text-tx-muted">No projects yet — check back soon!</p>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project, i) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={i}
-                onSelect={setSelected}
-                onWizard={openWizard}
-              />
-            ))}
-          </div>
+          <>
+            {/* Centered wrap so a short last row sits in the middle */}
+            <div className="flex flex-wrap justify-center gap-6">
+              {featured.map((project, i) => (
+                <div key={project.id} className="w-full md:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)] flex">
+                  <ProjectCard
+                    project={project}
+                    index={i}
+                    onSelect={setSelected}
+                    onWizard={openWizard}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {earlier.length > 0 && (
+              <motion.div
+                className="mt-14 max-w-3xl mx-auto"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.6 }}
+              >
+                <h3 className="text-sm font-semibold text-tx-muted uppercase tracking-wider mb-4 text-center">
+                  Earlier work
+                </h3>
+                <ul className="glass rounded-xl divide-y divide-white/10">
+                  {earlier.map((project) => (
+                    <li key={project.id}>
+                      <button
+                        onClick={() => setSelected(project)}
+                        className="w-full text-left px-5 py-4 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 cursor-pointer group"
+                      >
+                        <span className="font-medium text-tx-primary group-hover:text-tx-amber transition-colors sm:w-64 shrink-0">
+                          {project.title}
+                        </span>
+                        <span className="text-sm text-tx-secondary line-clamp-1">{project.description}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
 

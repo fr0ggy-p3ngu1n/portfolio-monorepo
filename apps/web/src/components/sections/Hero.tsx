@@ -5,13 +5,58 @@ import { smoothScrollTo } from '../../lib/smoothScroll';
 const NAME_WORDS = ['Matthew', 'Sullivan'];
 
 const ROLES = [
-  'Full-Stack Engineer',
+  'Full-Stack Developer',
   'Platform Engineer',
   'iOS Developer',
+  'Accessibility Engineer',
   'Embedded Systems Developer',
-  'Salesforce Developer',
-  'SQA Developer',
 ];
+
+// What's on the go right now. Update NOW_UPDATED whenever this changes.
+const NOW_UPDATED = 'Oct 2026';
+const NOW: { label: string; before?: string; link: { href: string; text: string }; after?: string }[] = [
+  { label: 'Building',      before: 'wAve at ', link: { href: 'https://landing.ehma.ai/', text: 'EHMA.ai' } },
+  { label: 'Shipping',      link: { href: 'https://sproutaac.org', text: 'Sprout AAC' }, after: ': v0.1.0 is out on macOS, and v0.2 (Open Board Format support) is in progress' },
+  { label: 'Just launched', link: { href: 'https://theredactedrecords.com', text: 'Redacted Records' }, after: ', a booking site for a Phoenix mixing engineer' },
+  { label: 'Polishing',     link: { href: 'https://clearpathext.com', text: 'ClearPath' }, after: ': an accessibility pass before it goes into the browser stores' },
+];
+
+function NowCard() {
+  return (
+    <motion.aside
+      className="glass rounded-2xl p-6 w-full max-w-md lg:max-w-none"
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 1.05, ease: [0.21, 0.47, 0.32, 0.98] }}
+      aria-labelledby="now-heading"
+    >
+      <div className="flex items-center justify-between mb-5">
+        <h2 id="now-heading" className="flex items-center gap-2 text-sm font-semibold text-tx-primary tracking-wide uppercase">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-60 motion-safe:animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+          </span>
+          Now
+        </h2>
+        <span className="text-xs text-tx-muted">Updated {NOW_UPDATED}</span>
+      </div>
+      <ul className="space-y-4">
+        {NOW.map((item) => (
+          <li key={item.label}>
+            <p className="text-xs font-mono text-tx-amber/80 mb-0.5">{item.label}</p>
+            <p className="text-sm text-tx-secondary leading-relaxed">
+              {item.before}
+              <a href={item.link.href} target="_blank" rel="noopener noreferrer" className="text-tx-primary font-medium hover:text-tx-amber transition-colors">
+                {item.link.text}
+              </a>
+              {item.after}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </motion.aside>
+  );
+}
 
 function useTypewriter(words: string[], speed = 70, pause = 1800, deleteSpeed = 38) {
   const [display, setDisplay] = useState('');
@@ -68,6 +113,17 @@ export default function Hero() {
   const y       = useTransform(scrollY, [0, 600], [0, -140]);
   const opacity = useTransform(scrollY, [0, 650], [1, 0]);
 
+  // On narrower screens the hero is taller than the fade distance, so the
+  // parallax would fade the bio (and the Now card under it) while you read.
+  const [parallax, setParallax] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setParallax(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -86,8 +142,8 @@ export default function Hero() {
 
       {/* Parallax content */}
       <motion.div
-        style={{ y, opacity }}
-        className="max-w-6xl mx-auto px-6 py-24 md:py-32 w-full"
+        style={parallax ? { y, opacity } : undefined}
+        className="max-w-6xl mx-auto px-6 py-24 md:py-32 w-full grid gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-center"
       >
         <div className="max-w-3xl">
 
@@ -222,6 +278,8 @@ export default function Hero() {
             )}
           </motion.div>
         </div>
+
+        <NowCard />
       </motion.div>
 
       {/* Scroll indicator */}

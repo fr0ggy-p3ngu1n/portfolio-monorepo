@@ -1,12 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { smoothScrollToTop } from '../lib/smoothScroll';
 
 export default function BackToTop() {
   const [visible, setVisible] = useState(false);
+  const lastY = useRef(0);
 
+  // Shown once you're well down the page and heading back up (or at the very
+  // bottom), so it doesn't sit on top of content while you're reading down.
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 600);
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY.current;
+      if (Math.abs(delta) < 8) return;
+      const atBottom = window.innerHeight + y >= document.documentElement.scrollHeight - 120;
+      setVisible(y > 600 && (delta < 0 || atBottom));
+      lastY.current = y;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -29,8 +39,8 @@ export default function BackToTop() {
             if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(40);
             smoothScrollToTop();
           }}
-          style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom))', right: '1.5rem' }}
-          className="fixed z-[9989] glass-amber w-10 h-10 rounded-full flex items-center justify-center text-tx-amber font-bold text-lg cursor-pointer border-none"
+          style={{ bottom: 'calc(1rem + env(safe-area-inset-bottom))', right: '1rem' }}
+          className="fixed z-[9989] glass-amber w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-tx-amber font-bold text-lg cursor-pointer border-none"
           aria-label="Back to top"
         >
           ↑

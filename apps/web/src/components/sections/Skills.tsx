@@ -121,7 +121,7 @@ const SkillCard = memo(function SkillCard({ category, icon, description, items }
         <h3 className="font-semibold text-tx-primary">{category}</h3>
       </div>
       <p className="text-sm text-tx-secondary leading-relaxed">{description}</p>
-      <div className="flex flex-wrap gap-1.5 mt-auto">
+      <div className="flex flex-wrap gap-1.5">
         {items.map((item) =>
           item === 'Python' ? (
             <PythonItem key="Python" />
