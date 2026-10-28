@@ -15,7 +15,7 @@ const ROLES = [
 // What's on the go right now. Update NOW_UPDATED whenever this changes.
 const NOW_UPDATED = 'Oct 2026';
 const NOW: { label: string; before?: string; link: { href: string; text: string }; after?: string }[] = [
-  { label: 'Building',      before: 'wAve at ', link: { href: 'https://landing.ehma.ai/', text: 'EHMA.ai' } },
+  { label: 'Building',      before: 'wAve at ', link: { href: 'https://www.linkedin.com/company/ehma-ai/home/', text: 'EHMA.ai' } },
   { label: 'Shipping',      link: { href: 'https://sproutaac.org', text: 'Sprout AAC' }, after: ': v0.1.0 is out on macOS, and v0.2 (Open Board Format support) is in progress' },
   { label: 'Just launched', link: { href: 'https://theredactedrecords.com', text: 'Redacted Records' }, after: ', a booking site for a Phoenix mixing engineer' },
   { label: 'Polishing',     link: { href: 'https://clearpathext.com', text: 'ClearPath' }, after: ': an accessibility pass before it goes into the browser stores' },
@@ -200,7 +200,7 @@ export default function Hero() {
             <p>
               At{' '}
               <a
-                href="https://landing.ehma.ai/"
+                href="https://www.linkedin.com/company/ehma-ai/home/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-tx-accent hover:underline"
