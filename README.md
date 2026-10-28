@@ -1,3 +1,5 @@
+<img src="brand/banners/github-readme-header-1280x320.png" alt="Matthew Sullivan, Full-Stack Developer. matthewsullivan.dev" width="100%">
+
 # Matthew Sullivan — Portfolio
 
 Personal portfolio and live full-stack demo.
@@ -9,16 +11,16 @@ Personal portfolio and live full-stack demo.
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 18, Vite 6, TypeScript 5 |
-| Styling | Tailwind CSS v4, CSS custom properties |
-| Animations | Framer Motion 11 |
+| Frontend | React 19, Vite 7, TypeScript 5, React Router 7 |
+| Styling | Tailwind CSS v4, CSS custom properties, self-hosted Inter + JetBrains Mono |
+| Animations | Framer Motion 12 |
 | Backend | Hono 4 on Cloudflare Workers |
 | Database | Cloudflare D1 (SQLite edge DB) + Prisma |
 | File Storage | Cloudflare R2 (resume PDF) |
 | Email | Resend |
 | Auth | Single-password bcrypt + 24h HS256 JWT |
 | Monorepo | pnpm workspaces |
-| Hosting | Cloudflare Pages (web) + Cloudflare Workers (API) |
+| Hosting | Cloudflare Pages (web) + Cloudflare Workers (API at `api.matthewsullivan.dev`), deployed by GitHub Actions |
 
 ---
 
@@ -26,27 +28,32 @@ Personal portfolio and live full-stack demo.
 
 ```
 portfolio/
+├── brand/                 # Logo, favicons, banners, link-preview cards, templates (see brand/README.md)
 ├── apps/
 │   ├── web/               # React SPA (Cloudflare Pages)
+│   │   ├── scripts/prerender.mjs  # Build-time render of the homepage (runs after vite build)
+│   │   ├── public/                # Favicons, fonts, og-image.png, _headers, _redirects, /brand page
 │   │   └── src/
+│   │       ├── entry-server.tsx   # Server entry used by the prerender
 │   │       ├── components/
 │   │       │   ├── layout/        # Header, Footer
 │   │       │   ├── sections/      # Hero, Skills, Experience, Projects, Education, AboutMe, Contact
 │   │       │   ├── EasterEggs.tsx # All global easter egg listeners
 │   │       │   ├── RingRunner.tsx # Hidden LOTR canvas game
+│   │       │   ├── BrandMark.tsx  # Inline MS logo (header, footer)
 │   │       │   ├── CommandPalette.tsx
 │   │       │   ├── BackToTop.tsx
 │   │       │   ├── GyroPermission.tsx
 │   │       │   └── ScrollProgress.tsx
 │   │       ├── context/           # ThemeContext, AuthContext
 │   │       ├── hooks/             # useTilt (3-D card effect, gyroscope on mobile)
-│   │       ├── lib/               # api.ts, smoothScroll.ts, gameAudio.ts, token.ts
+│   │       ├── lib/               # api.ts, prerendered.ts, smoothScroll.ts, gameAudio.ts, token.ts
 │   │       ├── pages/             # Home, admin/Dashboard, admin/Login, admin/ProjectForm
 │   │       └── router/
 │   └── api/               # Hono REST API (Cloudflare Workers)
 │       └── src/
 │           ├── middleware/        # CORS, adminAuth (JWT guard)
-│           └── routes/            # auth, projects, contact, resume, og, leaderboard
+│           └── routes/            # auth, projects, contact, resume, og, leaderboard, analytics
 └── packages/
     └── shared/            # Zod schemas + TypeScript types (consumed by both apps)
 ```
@@ -56,17 +63,20 @@ portfolio/
 ## Features
 
 ### Frontend
-- **Liquid glass UI** — all cards use layered `backdrop-filter` glass effects; amber accent throughout
+- **Liquid glass UI** — all cards use layered `backdrop-filter` glass effects, in the pink→violet brand palette (see `brand/`)
+- **Pre-rendered homepage** — `scripts/prerender.mjs` renders the page to static HTML at build time with the projects inlined, so crawlers and link previews get real content and the project cards don't flash a skeleton
+- **"Now" card** — what I'm working on, next to the hero (`NOW` in `Hero.tsx`)
+- **Goose** — hover or tap the Cat Dad card for photos of my cat
 - **Dark / light mode** — CSS custom-property token system; preference stored in `localStorage`
 - **3-D tilt cards** — mouse-tracking perspective transform on desktop; gyroscope tilt on mobile (iOS permission flow included)
 - **Smooth custom scroll** — eased `requestAnimationFrame` scroll for all nav links and the Back to Top button (easeInOutCubic, 500–900 ms adaptive duration)
 - **Command palette** — ⌘K / Ctrl+K opens a full-screen searchable palette with nav links, resume download, and social links
-- **Scroll progress bar** — amber indicator at the top of the viewport
+- **Scroll progress bar** — accent-coloured indicator at the top of the viewport
 - **Typewriter hero** — cycling role titles with typing / pausing / deleting state machine
 - **Animated dot-grid background** — subtle drifting dot pattern in the hero
 - **Parallax hero** — content translates upward on scroll using `useTransform`
 - **Responsive hamburger menu** — animated with height + opacity transition; haptic feedback on supported devices
-- **Back to Top button** — fades in after 600 px of scroll; haptic on tap
+- **Back to Top button** — appears when you scroll back up (or reach the bottom) after 600 px; haptic on tap
 - **prefers-reduced-motion** — all CSS animations and Framer Motion respect the system preference
 - **Safe area insets** — fixed elements use `env(safe-area-inset-bottom/top)` for notched phones
 - **iOS input zoom fix** — inputs use `text-base md:text-sm` to prevent iOS auto-zoom
@@ -75,6 +85,7 @@ portfolio/
 - JWT-protected admin CRUD for projects and contact submissions
 - Contact form with Zod validation, Resend email delivery, and D1 persistence
 - Resume served from Cloudflare R2; updatable via admin panel without redeployment
+- Site analytics for the admin dashboard, read from Cloudflare Web Analytics through the GraphQL API
 - Shared Zod schemas between frontend and API (`packages/shared`)
 
 ### Admin Panel (`/admin`)
@@ -82,12 +93,13 @@ portfolio/
 - Manage projects (create, edit, delete)
 - View and mark contact submissions as read
 - Upload a new resume PDF directly to R2
+- See page views and top pages from Cloudflare Web Analytics
 
 ---
 
 ## Easter Eggs
 
-There are **6 hidden easter eggs** — all LOTR themed. None are mentioned anywhere on the site.
+There are more hidden easter eggs than the ones below, all LOTR themed. None are mentioned anywhere on the site, and they keep their gold even though the rest of the site moved to pink.
 
 ### 🧙 A — The One Ring (Konami Code)
 **Trigger:** Type the Konami Code on your keyboard: `↑ ↑ ↓ ↓ ← → ← → B A`
@@ -102,7 +114,7 @@ There are **6 hidden easter eggs** — all LOTR themed. None are mentioned anywh
 **Effect:** A small tooltip appears above the tag showing the One Ring image and the text *"My Precious…"* in italic serif. Disappears after 3 seconds.
 
 ### 🕹️ G — The Road to Mordor (hidden mini-game)
-**Trigger:** Go to the **About → Beyond the Code** section. Find the **Gamer** card with the 🕹️ icon. **Hold the card for 1.5 seconds.** An amber progress ring fills around the card while you hold; release early to cancel.
+**Trigger:** Go to the **About → Beyond the Code** section. Find the **Gamer** card with the 🕹️ icon. **Hold the card for 1.5 seconds.** A gold progress ring fills around the card while you hold; release early to cancel.
 **Effect:** Opens a full Lord of the Rings–themed infinite runner:
 - Play as 🧙 Gandalf dodging 🗡️ swords on the ground
 - 🦅 Nazgûl fell beasts appear as aerial obstacles after score 100
@@ -133,8 +145,9 @@ There are **6 hidden easter eggs** — all LOTR themed. None are mentioned anywh
 # Install dependencies
 pnpm install
 
-# Copy and fill in local secrets
-cp apps/api/.dev.vars.example apps/api/.dev.vars
+# Copy and fill in local secrets: .env.example has the blocks for
+# apps/api/.dev.vars and apps/web/.env.local
+cp .env.example apps/api/.dev.vars   # then keep only the .dev.vars block
 
 # Start both apps in parallel
 pnpm dev
@@ -151,8 +164,9 @@ pnpm dev
 |---|---|---|---|
 | GET | `/api/health` | — | Uptime check |
 | POST | `/api/auth/login` | — | Returns 24 h JWT |
-| GET | `/api/projects` | — | Public project list |
-| GET | `/api/projects/:id` | — | Single project |
+| GET | `/api/projects` | — | Published projects |
+| GET | `/api/projects/all` | JWT | All projects, including drafts |
+| GET | `/api/projects/:id` | JWT | Single project (for the edit form) |
 | POST | `/api/projects` | JWT | Create project |
 | PUT | `/api/projects/:id` | JWT | Update project |
 | DELETE | `/api/projects/:id` | JWT | Delete project |
@@ -161,47 +175,44 @@ pnpm dev
 | PUT | `/api/contact/:id/read` | JWT | Mark as read |
 | GET | `/api/resume` | — | Stream resume PDF from R2 |
 | PUT | `/api/resume` | JWT | Replace resume PDF in R2 |
-| GET | `/api/og` | — | Dynamic 1200×630 OG image (PNG) |
+| GET | `/api/og` | — | Dynamic 1200×630 card (PNG), a demo of satori + resvg on Workers |
 | GET | `/api/leaderboard` | — | Top 10 Ring Runner scores |
 | POST | `/api/leaderboard` | — | Submit a score (server-side qualification check) |
+| GET | `/api/analytics` | JWT | Page views for the admin dashboard (`?days=1–90`) |
 
 ---
 
 ## Deployment
 
-### API (Cloudflare Workers)
+Pushing to `main` deploys automatically with GitHub Actions: `.github/workflows/deploy-web.yml` builds and pre-renders the site and deploys it to Cloudflare Pages, and `deploy-api.yml` deploys the Worker. Each only runs when its app (or `packages/`) changes.
+
+The site reads the API address from `apps/web/.env.production` (`VITE_API_URL=https://api.matthewsullivan.dev`); it's committed because it's a public URL baked into the bundle.
+
+### First-time API setup
 
 ```bash
-# First time — create D1 database and R2 bucket
+# Create the D1 database and R2 bucket
 wrangler d1 create portfolio-db
 wrangler r2 bucket create portfolio-assets
 
 # Apply DB migrations
 wrangler d1 migrations apply portfolio-db --remote
 
-# Set secrets
+# Secrets
 wrangler secret put JWT_SECRET
-wrangler secret put ADMIN_PASSWORD_HASH   # bcrypt hash of your admin password
+wrangler secret put ADMIN_PASSWORD_HASH     # bcrypt hash of your admin password
 wrangler secret put RESEND_API_KEY
 wrangler secret put CONTACT_EMAIL
-
-# Deploy
-pnpm deploy:api
+wrangler secret put CLOUDFLARE_API_TOKEN    # Analytics read, for /api/analytics
+wrangler secret put CLOUDFLARE_ACCOUNT_ID
 ```
 
-To upload the initial resume:
+The custom domain is set in `apps/api/wrangler.toml` (`routes`, `custom_domain = true`); the `workers.dev` URL is off.
+
+To upload a resume without the admin panel:
 ```bash
 wrangler r2 object put portfolio-assets/resume.pdf --file ./resume.pdf --remote
 ```
-
-### Web (Cloudflare Pages)
-
-```bash
-pnpm build   # builds to apps/web/dist
-npx wrangler pages deploy apps/web/dist --project-name portfolio-web
-```
-
-Set `VITE_API_URL=https://portfolio-api.<your-subdomain>.workers.dev` as a Pages environment variable in the Cloudflare dashboard for CI builds.
 
 ---
 
@@ -231,8 +242,11 @@ Custom `requestAnimationFrame` loop with `easeInOutCubic`. Duration is adaptive:
 ### Game Audio (`src/lib/gameAudio.ts`)
 All sounds are synthesized at runtime using the Web Audio API — no audio files. `AudioContext` is a lazy singleton (browsers require a user gesture before audio can start). See file comments for synthesis details on each sound.
 
+### Link previews
+The site's `og:image` is the static brand card at `/og-image.png?v=N` (1200×630, from `brand/social/`). Bump `v` whenever the image changes: LinkedIn caches preview images by URL.
+
 ### Dynamic OG Image (`apps/api/src/routes/og.ts`)
-`GET /api/og` returns a 1200×630 PNG for use as `og:image` / `twitter:image`. The pipeline:
+`GET /api/og` renders a 1200×630 PNG at request time. It's kept as a demo of running satori and resvg on Workers; the site itself uses the static card above. The pipeline:
 1. **satori** (`satori/standalone`) — converts a JSX-like element tree to an SVG string, converting text to paths using Inter font data fetched from jsDelivr at cold-start.
 2. **resvg** (`@cf-wasm/resvg/workerd`) — renders the SVG to a PNG via a Rust-powered WebAssembly renderer.
 
@@ -242,6 +256,9 @@ On any error the route issues a 302 to the static `/og-image.png` fallback on Cl
 
 ### Resume Storage
 The resume PDF lives in a Cloudflare R2 bucket (`portfolio-assets`). `GET /api/resume` streams it publicly with a 7-day `Cache-Control`; `PUT /api/resume` is JWT-protected and accepts a multipart form upload. Updating the resume requires no redeployment.
+
+### Brand
+The MS signal mark, colours, type, and every rendered asset live in `brand/` (with HTML templates to re-render them). The public guide is at [matthewsullivan.dev/brand](https://matthewsullivan.dev/brand/).
 
 ### Performance
 - **Code splitting** — Admin routes (`Login`, `Dashboard`, `ProjectForm`, `AdminLayout`) are `React.lazy()` + `Suspense`. Non-admin visitors never download that code. Vite `manualChunks` splits React/Router and Framer Motion into separately cached vendor chunks; the main app chunk went from 472 KB → 132 KB (gzip: 146 KB → 37 KB).
