@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { smoothScrollTo } from '../../lib/smoothScroll';
-
-const RESUME_URL = `${import.meta.env.VITE_API_URL ?? ''}/api/resume`;
+import { RESUME_URL } from '../../lib/api';
 
 const NAV_SECTIONS = [
   { label: 'Skills',     id: 'skills'     },

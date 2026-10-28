@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { smoothScrollTo } from '../lib/smoothScroll';
 import { useTheme } from '../context/ThemeContext';
+import { RESUME_URL } from '../lib/api';
 
 type Item = {
   group: string;
@@ -34,7 +35,7 @@ export default function CommandPalette() {
     },
     {
       group: 'Links', icon: '📄', label: 'Download Resume',
-      action: () => { const a = document.createElement('a'); a.href = '/resume.pdf'; a.download = 'Matthew Sullivan - Resume.pdf'; a.click(); close(); },
+      action: () => { const a = document.createElement('a'); a.href = RESUME_URL; a.download = 'Matthew Sullivan - Resume.pdf'; a.click(); close(); },
     },
     {
       group: 'Actions', icon: theme === 'dark' ? '☀️' : '🌙',

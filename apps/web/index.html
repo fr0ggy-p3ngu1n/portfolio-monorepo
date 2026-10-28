@@ -6,24 +6,46 @@
 
     <!-- Primary -->
     <title>Matthew Sullivan | Software Engineer</title>
-    <meta name="description" content="Full-stack engineer specialising in .NET, React, Azure, and iOS. Currently building wAve at EHMA.ai." />
+    <meta name="description" content="Full-stack software engineer at EHMA.ai, where I build wAve. I also make Sprout AAC, a free, open-source communication app for kids." />
     <link rel="canonical" href="https://matthewsullivan.dev/" />
 
     <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0f1117" />
+
+    <!-- Apply a saved light theme before first paint (its sha256 is allowed in public/_headers) -->
+    <script>try{if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light')}catch(e){}</script>
 
     <!-- Structured data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Matthew Sullivan",
-        "url": "https://matthewsullivan.dev",
-        "jobTitle": "Full-Stack Software Engineer",
-        "description": "Full-stack engineer specialising in .NET, React, Azure, and iOS.",
-        "sameAs": [
-          "https://www.linkedin.com/in/mlsulli",
-          "https://github.com/fr0ggy-p3ngu1n"
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://matthewsullivan.dev/#person",
+            "name": "Matthew Sullivan",
+            "url": "https://matthewsullivan.dev/",
+            "image": "https://matthewsullivan.dev/avatar.jpg",
+            "jobTitle": "Full-Stack Software Engineer",
+            "description": "Full-stack software engineer at EHMA.ai and creator of Sprout AAC, a free, open-source communication app for kids.",
+            "worksFor": { "@type": "Organization", "name": "EHMA.ai", "url": "https://landing.ehma.ai/" },
+            "alumniOf": { "@type": "CollegeOrUniversity", "name": "Arizona State University" },
+            "knowsAbout": ["React", "TypeScript", "Python", ".NET", "Microsoft Azure", "Cloudflare Workers", "Flutter", "Swift", "Accessibility", "Augmentative and alternative communication"],
+            "sameAs": [
+              "https://www.linkedin.com/in/mlsulli",
+              "https://github.com/fr0ggy-p3ngu1n"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://matthewsullivan.dev/#website",
+            "url": "https://matthewsullivan.dev/",
+            "name": "Matthew Sullivan",
+            "author": { "@id": "https://matthewsullivan.dev/#person" }
+          }
         ]
       }
     </script>
@@ -38,10 +60,12 @@
 
     <!-- Open Graph -->
     <meta property="og:type"        content="website" />
-    <meta property="og:url"         content="https://matthewsullivan.dev" />
+    <meta property="og:url"         content="https://matthewsullivan.dev/" />
+    <meta property="og:site_name"   content="Matthew Sullivan" />
     <meta property="og:title"       content="Matthew Sullivan — Full-Stack Software Engineer" />
-    <meta property="og:description" content="Full-stack engineer specialising in .NET, React, Azure, and iOS. Currently building wAve at EHMA.ai." />
-    <meta property="og:image"       content="%VITE_API_URL%/api/og" />
+    <meta property="og:description" content="Full-stack software engineer at EHMA.ai, where I build wAve. I also make Sprout AAC, a free, open-source communication app for kids." />
+    <meta property="og:image"       content="https://matthewsullivan.dev/og-image.png" />
+    <meta property="og:image:alt"   content="Matthew Sullivan, Full-Stack Software Engineer" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type"   content="image/png" />
@@ -49,8 +73,8 @@
     <!-- Twitter / X -->
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content="Matthew Sullivan — Full-Stack Software Engineer" />
-    <meta name="twitter:description" content="Full-stack engineer specialising in .NET, React, Azure, and iOS. Currently building wAve at EHMA.ai." />
-    <meta name="twitter:image"       content="%VITE_API_URL%/api/og" />
+    <meta name="twitter:description" content="Full-stack software engineer at EHMA.ai, where I build wAve. I also make Sprout AAC, a free, open-source communication app for kids." />
+    <meta name="twitter:image"       content="https://matthewsullivan.dev/og-image.png" />
   </head>
   <body>
     <div id="root"></div>

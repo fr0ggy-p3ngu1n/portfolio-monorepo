@@ -2,6 +2,8 @@ import { getToken, removeToken } from './token';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 
+export const RESUME_URL = `${API_URL}/api/resume`;
+
 // Login intentionally returns 401 for a wrong password — that's a normal,
 // inline-handled outcome (see Login.tsx), not an expired session, so it
 // must not trigger the global redirect below.

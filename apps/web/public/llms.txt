@@ -1,0 +1,23 @@
+# Matthew Sullivan
+
+> Full-stack software engineer in Arizona. Works at EHMA.ai on wAve, an AI-powered solar sales platform, and builds Sprout AAC, a free, open-source communication app for kids, in his own time.
+
+This is a single-page portfolio. Everything below is on https://matthewsullivan.dev/.
+
+## Work
+- EHMA.ai: owns wAve across the full stack. In 11 weeks set up CI/CD and monitoring, raised test coverage by 828%, cut API response times from 18 s to 316 ms, migrated 556K records with no downtime, and overhauled personal-data handling.
+- Tibit Communications (earlier): embedded and manufacturing software, including a device branding station and a network statistics web interface that ships in the Tibit/Ciena PON Manager product.
+
+## Projects
+- [Sprout AAC](https://sproutaac.org): free, open-source AAC app built in Flutter. v0.1.0 is out for macOS; iOS/Android builds and Open Board Format support are in progress.
+- [ClearPath](https://clearpathext.com): open-source browser extension for read-aloud, reading mode, symbol overlays and text simplification (uses the reader's own LLM API key). Not yet in browser stores.
+- [Redacted Records](https://theredactedrecords.com): booking and portfolio site built for a Phoenix mixing and mastering engineer.
+- [Python: First Contact](https://python-first-contact.vercel.app): Python study quiz with an in-browser Python sandbox.
+
+## Education
+- B.S. Software Engineering, Arizona State University (Polytechnic campus)
+
+## Contact
+- [LinkedIn](https://www.linkedin.com/in/mlsulli)
+- [GitHub](https://github.com/fr0ggy-p3ngu1n)
+- Contact form: https://matthewsullivan.dev/#contact

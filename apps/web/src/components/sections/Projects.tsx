@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { api } from '../../lib/api';
 import type { Project } from '@portfolio/shared';
 import { useTilt } from '../../hooks/useTilt';
+import { prerenderedProjects } from '../../lib/prerendered';
 
 const TECH_NOTES = [
   {
@@ -11,7 +12,7 @@ const TECH_NOTES = [
   },
   {
     title: 'Dynamic OG image (WASM pipeline)',
-    body: 'GET /api/og returns a 1200×630 PNG for og:image. The pipeline: satori/standalone converts a JSX-like element tree to SVG using Inter font data fetched from jsDelivr at cold-start; @cf-wasm/resvg/workerd renders that SVG to PNG via a Rust-powered WebAssembly renderer. Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wrangler\'s CompiledWasm rule. Cloudflare Workers blocks runtime WASM compilation from raw bytes but allows instantiation of pre-compiled WebAssembly.Module objects. The yoga WASM binary is extracted from yoga-layout\'s base64-embedded bundle so its Emscripten glue code matches exactly. On any error the route issues a 302 to the static /og-image.png fallback.',
+    body: 'GET /api/og returns a 1200×630 PNG for og:image. The pipeline: satori/standalone converts a JSX-like element tree to SVG using Inter font data fetched from jsDelivr at cold-start; @cf-wasm/resvg/workerd renders that SVG to PNG via a Rust-powered WebAssembly renderer. Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wrangler\'s CompiledWasm rule. Cloudflare Workers blocks runtime WASM compilation from raw bytes but allows instantiation of pre-compiled WebAssembly.Module objects. The yoga WASM binary is extracted from yoga-layout\'s base64-embedded bundle so its Emscripten glue code matches exactly. On any error the route issues a 302 to the static /og-image.png fallback. The page\'s own og:image is a snapshot of this output served as a static file, because some link-preview crawlers give up on a 1.5 s cold render.',
   },
   {
     title: 'Audio synthesis (no audio files)',
@@ -198,8 +199,8 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
 });
 
 export default function Projects() {
-  const [projects, setProjects]   = useState<Project[]>([]);
-  const [loading, setLoading]     = useState(true);
+  const [projects, setProjects]   = useState<Project[]>(() => prerenderedProjects() ?? []);
+  const [loading, setLoading]     = useState(() => projects.length === 0);
   const [selected, setSelected]   = useState<Project | null>(null);
 
   // Easter Egg J — invisible wizard modal

@@ -1,15 +1,18 @@
 import { cors as honoCors } from 'hono/cors';
 
-// Lock origins to your production domain after deploying.
-// Add it to this array: 'https://yourdomain.com'
+const ALLOWED_ORIGINS = new Set([
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'https://matthewsullivan.dev',
+  'https://www.matthewsullivan.dev', // until the www → apex redirect is live
+]);
+
+// Pages preview deploys (e.g. https://<branch>.portfolio-web-7v7.pages.dev)
+const PREVIEW_ORIGIN = /^https:\/\/([a-z0-9-]+\.)?portfolio-web-7v7\.pages\.dev$/;
+
 export const cors = honoCors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:4173',
-    'https://portfolio-web-7v7.pages.dev',
-    'https://matthewsullivan.dev',
-    'https://www.matthewsullivan.dev',
-  ],
+  origin: (origin) =>
+    ALLOWED_ORIGINS.has(origin) || PREVIEW_ORIGIN.test(origin) ? origin : null,
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,

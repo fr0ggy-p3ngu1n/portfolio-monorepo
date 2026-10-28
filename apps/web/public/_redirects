@@ -1,1 +1,6 @@
-/* /index.html 200
+# The old static resume copy; the current PDF lives in R2 behind the API.
+/resume.pdf  https://api.matthewsullivan.dev/api/resume  302
+
+# Admin routes run client-side from an un-prerendered app shell.
+# Anything else that isn't a real file gets 404.html with a 404 status.
+/admin/*  /admin/  200

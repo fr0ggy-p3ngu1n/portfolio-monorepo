@@ -143,9 +143,9 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.72 }}
           >
             <p>
-              I started my career in embedded systems and manufacturing software — environments
-              where reliability isn&apos;t optional and the hardware doesn&apos;t forgive mistakes.
-              That foundation shapes how I think about software today.
+              I started out writing embedded and manufacturing software at Tibit Communications,
+              where code ran on real hardware and mistakes were expensive. I still build and test
+              that way.
             </p>
             <p>
               At{' '}
@@ -156,25 +156,24 @@ export default function Hero() {
                 className="text-tx-amber hover:underline"
               >
                 EHMA.ai
-              </a>{' '}
-              I build and own wAve — an AI-powered solar sales platform — across the full stack.
-              In 11 weeks I helped take the platform from no CI/CD, no monitoring, and silent
-              failures everywhere to production-grade: 828% increase in test coverage, API
-              response times from 18 seconds to 316ms, zero-downtime database migration of
-              556K records, and a full PII security overhaul.
+              </a>
+              , I own wAve, an AI-powered solar sales platform, from front end to back end. In 11
+              weeks I set up CI/CD and monitoring, raised test coverage by 828%, cut API response
+              times from 18 seconds to 316ms, migrated 556K records with no downtime, and
+              overhauled how we handle personal data.
             </p>
             <p>
-              Outside of work I&apos;m building{' '}
+              Outside work, I&apos;m building{' '}
               <a
-                href="https://sproutaac.com"
+                href="https://sproutaac.org"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-tx-amber hover:underline"
               >
                 Sprout AAC
-              </a>{' '}
-              — a free, open-source communication app for children who communicate differently.
-              Commercial alternatives cost $150–$250. They shouldn&apos;t have to.
+              </a>
+              , a free, open-source app that gives kids who can&apos;t rely on speech a way to
+              communicate. Commercial AAC apps cost $150–$250. Sprout is free.
             </p>
           </motion.div>
 

@@ -1,7 +1,9 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTilt } from '../../hooks/useTilt';
-import RingRunner from '../RingRunner';
+// The game only loads when someone summons it; the hold starts the download early.
+const loadRingRunner = () => import('../RingRunner');
+const RingRunner = lazy(loadRingRunner);
 
 type Interest = {
   icon: string;
@@ -15,38 +17,38 @@ const INTERESTS: Interest[] = [
     icon: '🤘',
     title: 'Metal Vocalist',
     description:
-      'I front a metal band as the lead vocalist. Writing riffs and putting everything into a performance is my creative outlet outside of code.',
+      "I sing in Bewitched Cadaver, a metal band. It's my main creative outlet outside of code.",
     href: 'https://linktr.ee/BewitchedCadaver',
   },
   {
     icon: '🕹️',
     title: 'Gamer',
     description:
-      'Gaming has been a lifelong passion — from deep RPG narratives to competitive multiplayer. A great game after a long sprint is the perfect reset.',
+      "I've played games my whole life, from long story-driven RPGs to competitive multiplayer. It's how I switch off after a long sprint.",
   },
   {
     icon: '🪿',
     title: 'Cat Dad',
     description:
-      'Goose, my grey and white cat, is the undisputed CEO of the home office — an expert in walking across keyboards and demanding attention during standups.',
+      'Goose is my grey and white cat and the real boss of my home office. Walks across the keyboard, joins standups uninvited.',
   },
   {
     icon: '☕',
     title: 'Coffee Enthusiast',
     description:
-      "Coffee isn't a habit, it's a ritual. The first cup is non-negotiable before any meaningful code gets written.",
+      'The first cup comes before any real code gets written. No exceptions.',
   },
   {
     icon: '🔪',
     title: 'Horror Movie Fan',
     description:
-      'A good horror film is the ultimate exercise in tension and atmosphere — the same principles that make great UI. From slow-burn psychological dread to classic slashers, I love it all.',
+      "Slow-burn psychological horror and classic slashers alike. I'll watch almost anything in the genre.",
   },
   {
     icon: '🥀',
     title: 'Tattoo Collector',
     description:
-      'My tattoos are a personal gallery — each one a snapshot of something meaningful. The craft, the permanence, and the storytelling behind the art all speak to me.',
+      'Each one marks something that mattered to me when I got it, and the collection keeps growing.',
   },
 ];
 
@@ -125,6 +127,7 @@ function GamerCard({ onOpen }: { onOpen: () => void }) {
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType !== 'touch') return;
+    loadRingRunner();
     startRef.current = Date.now();
     intervalRef.current = setInterval(() => {
       const p = Math.min((Date.now() - startRef.current) / HOLD_MS, 1);
@@ -250,9 +253,11 @@ export default function AboutMe() {
       </div>
 
       {/* Easter egg — LOTR runner game */}
-      <AnimatePresence>
-        {gameOpen && <RingRunner onClose={() => setGameOpen(false)} />}
-      </AnimatePresence>
+      <Suspense fallback={null}>
+        <AnimatePresence>
+          {gameOpen && <RingRunner onClose={() => setGameOpen(false)} />}
+        </AnimatePresence>
+      </Suspense>
     </section>
   );
 }

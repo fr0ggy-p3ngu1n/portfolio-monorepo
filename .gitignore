@@ -32,3 +32,6 @@ dist/
 
 # Resume PDF — served from Cloudflare R2 in production
 apps/web/public/resume.pdf
+
+# prerender SSR build output (deleted after each build)
+apps/web/dist-server/
