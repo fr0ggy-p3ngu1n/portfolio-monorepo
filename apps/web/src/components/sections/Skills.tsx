@@ -1,53 +1,54 @@
 import { useRef, useState, memo } from 'react';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useTilt } from '../../hooks/useTilt';
+import Icon, { type IconName } from '../Icon';
 
-const SKILLS: { category: string; icon: string; description: string; items: string[] }[] = [
+const SKILLS: { category: string; icon: IconName; description: string; items: string[] }[] = [
   {
     category: 'Languages',
-    icon: '💻',
+    icon: 'code',
     description: 'C and C++ from embedded work, Python and TypeScript for most of what I\'ve built since, Swift for iOS, and APEX and SOQL for Salesforce.',
     items: ['Python', 'JavaScript', 'TypeScript', 'C / C++', 'Java', 'Swift / SwiftUI', 'APEX', 'SQL / SOQL'],
   },
   {
     category: 'Web & Frameworks',
-    icon: '🌐',
+    icon: 'globe',
     description: 'React on the front end, plus Angular from the Tibit network statistics tool. Hono, Django and ASP.NET on the back end. I use TypeScript wherever it fits.',
     items: ['React', 'Hono', 'Angular', 'Tailwind CSS', 'Framer Motion', 'Django', '.NET / ASP.NET', 'HTML / CSS'],
   },
   {
     category: 'Databases',
-    icon: '🗄️',
+    icon: 'database',
     description: 'SQL and document databases alike: MongoDB and Azure Cosmos DB at EHMA.ai, Cloudflare D1 for my own projects, SOQL for Salesforce, and Pandas and NumPy for working with data in Python.',
     items: ['SQL', 'SOQL', 'MongoDB', 'Azure Cosmos DB', 'D1 (SQLite)', 'Prisma', 'Pandas', 'NumPy'],
   },
   {
     category: 'Cloud & DevOps',
-    icon: '☁️',
+    icon: 'cloud',
     description: 'My production work at EHMA.ai runs on Azure: Functions, Cosmos DB, Key Vault and API Management. My own projects run on Cloudflare Workers and Pages. I\'ve set up CI/CD in GitHub Actions and Bitbucket Pipelines, including an automated TestFlight release.',
     items: ['Microsoft Azure', 'Azure Functions', 'Azure Cosmos DB', 'Azure Key Vault', 'Azure API Management', 'Cloudflare Workers', 'Cloudflare Pages', 'AWS', 'CI/CD Pipelines', 'Git / GitHub / GitLab', 'Salesforce', 'JIRA', 'Ansible', 'pnpm'],
   },
   {
     category: 'Hardware & Embedded',
-    icon: '🔧',
+    icon: 'chip',
     description: 'At Tibit I wrote embedded software on Linux, programmed FPGAs, and talked to hardware over UART and I2C, including a 16-port board used in production manufacturing. I\'ve also worked with real-time operating systems.',
     items: ['FPGA', 'UART', 'I2C', 'RTOS', 'Embedded Linux', 'Wireshark'],
   },
   {
     category: 'Testing & QA',
-    icon: '✅',
+    icon: 'check',
     description: 'I worked as an SQA developer, writing test plans, leading their reviews, and running feature, integration, upgrade and regression testing. I also helped move the team from JIRA tracking to TestRail.',
     items: ['PyTest', 'Playwright', 'Vitest', 'JUnit', 'Postman', 'TestRail', 'Gradle', 'Bitbucket'],
   },
   {
     category: 'AI & Developer Tools',
-    icon: '🤖',
+    icon: 'sparkles',
     description: 'I use AI tools every day: GitHub Copilot for completions and refactors in the editor, and Claude for architecture decisions, debugging hard problems and building features faster.',
     items: ['GitHub Copilot', 'Claude (Anthropic)', 'ChatGPT', 'Prompt Engineering', 'AI-Assisted Development'],
   },
   {
     category: 'Collaboration & Process',
-    icon: '🤝',
+    icon: 'users',
     description: 'I\'ve worked at a startup and inside a larger company after an acquisition. I present technical work to mixed audiences, write documentation, and have run knowledge-transfer sessions for engineering and other teams.',
     items: ['Agile / Scrum', 'Technical Writing', 'Test Planning', 'Code Review', 'Knowledge Transfer', 'Presentations'],
   },
@@ -117,7 +118,7 @@ const SkillCard = memo(function SkillCard({ category, icon, description, items }
       className="glass rounded-xl p-6 cursor-default flex flex-col gap-4 h-full"
     >
       <div className="flex items-center gap-3">
-        <span className="text-2xl">{icon}</span>
+        <span className="w-10 h-10 rounded-xl glass flex items-center justify-center shrink-0"><Icon name={icon} size={22} /></span>
         <h3 className="font-semibold text-tx-primary">{category}</h3>
       </div>
       <p className="text-sm text-tx-secondary leading-relaxed">{description}</p>

@@ -3,10 +3,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { smoothScrollTo } from '../lib/smoothScroll';
 import { useTheme } from '../context/ThemeContext';
 import { RESUME_URL } from '../lib/api';
+import Icon, { type IconName } from './Icon';
 
 type Item = {
   group: string;
-  icon: string;
+  icon: IconName;
   label: string;
   action: () => void;
 };
@@ -23,22 +24,22 @@ export default function CommandPalette() {
   const nav = (id: string) => { smoothScrollTo(id); close(); };
 
   const ALL_ITEMS: Item[] = [
-    { group: 'Navigate', icon: '⚡', label: 'Skills',      action: () => nav('skills') },
-    { group: 'Navigate', icon: '💼', label: 'Experience',  action: () => nav('experience') },
-    { group: 'Navigate', icon: '🚀', label: 'Projects',    action: () => nav('projects') },
-    { group: 'Navigate', icon: '🎓', label: 'Education',   action: () => nav('education') },
-    { group: 'Navigate', icon: '🙋', label: 'About',       action: () => nav('about') },
-    { group: 'Navigate', icon: '✉️',  label: 'Contact',    action: () => nav('contact') },
+    { group: 'Navigate', icon: 'zap', label: 'Skills',      action: () => nav('skills') },
+    { group: 'Navigate', icon: 'briefcase', label: 'Experience',  action: () => nav('experience') },
+    { group: 'Navigate', icon: 'rocket', label: 'Projects',    action: () => nav('projects') },
+    { group: 'Navigate', icon: 'cap', label: 'Education',   action: () => nav('education') },
+    { group: 'Navigate', icon: 'user', label: 'About',       action: () => nav('about') },
+    { group: 'Navigate', icon: 'mail', label: 'Contact',    action: () => nav('contact') },
     {
-      group: 'Links', icon: '🔗', label: 'LinkedIn',
+      group: 'Links', icon: 'link', label: 'LinkedIn',
       action: () => { window.open('https://www.linkedin.com/in/mlsulli', '_blank'); close(); },
     },
     {
-      group: 'Links', icon: '📄', label: 'Download Resume',
+      group: 'Links', icon: 'file', label: 'Download Resume',
       action: () => { const a = document.createElement('a'); a.href = RESUME_URL; a.download = 'Matthew Sullivan - Resume.pdf'; a.click(); close(); },
     },
     {
-      group: 'Actions', icon: theme === 'dark' ? '☀️' : '🌙',
+      group: 'Actions', icon: theme === 'dark' ? 'sun' : 'moon',
       label: `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`,
       action: () => { toggle(); close(); },
     },
@@ -156,7 +157,7 @@ export default function CommandPalette() {
                             }`}
                           >
                             <span className="text-base leading-none w-5 text-center shrink-0">
-                              {item.icon}
+                              <Icon name={item.icon} size={16} />
                             </span>
                             <span className="flex-1">{item.label}</span>
                             {active && (

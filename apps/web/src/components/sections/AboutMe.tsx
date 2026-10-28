@@ -1,12 +1,13 @@
 import { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTilt } from '../../hooks/useTilt';
+import Icon, { type IconName } from '../Icon';
 // The game only loads when someone summons it; the hold starts the download early.
 const loadRingRunner = () => import('../RingRunner');
 const RingRunner = lazy(loadRingRunner);
 
 type Interest = {
-  icon: string;
+  icon: IconName;
   title: string;
   description: string;
   href?: string;
@@ -14,38 +15,38 @@ type Interest = {
 
 const INTERESTS: Interest[] = [
   {
-    icon: '🤘',
+    icon: 'mic',
     title: 'Metal Vocalist',
     description:
       "I sing in Bewitched Cadaver, a metal band. It's my main creative outlet outside of code.",
     href: 'https://linktr.ee/BewitchedCadaver',
   },
   {
-    icon: '🕹️',
+    icon: 'gamepad',
     title: 'Gamer',
     description:
       "I've played games my whole life, from long story-driven RPGs to competitive multiplayer. It's how I switch off after a long sprint.",
   },
   {
-    icon: '🪿',
+    icon: 'user',
     title: 'Cat Dad',
     description:
       'Goose is my grey and white cat and the real boss of my home office. Walks across the keyboard, joins standups uninvited.',
   },
   {
-    icon: '☕',
+    icon: 'coffee',
     title: 'Coffee Enthusiast',
     description:
       'The first cup comes before any real code gets written. No exceptions.',
   },
   {
-    icon: '🔪',
+    icon: 'ghost',
     title: 'Horror Movie Fan',
     description:
       "Slow-burn psychological horror and classic slashers alike. I'll watch almost anything in the genre.",
   },
   {
-    icon: '🥀',
+    icon: 'pen',
     title: 'Tattoo Collector',
     description:
       'Each one marks something that mattered to me when I got it, and the collection keeps growing.',
@@ -58,7 +59,7 @@ function TiltCard({ interest }: { interest: Interest }) {
 
   const inner = (
     <>
-      <span className="text-3xl shrink-0 mt-0.5">{interest.icon}</span>
+      <span className="w-11 h-11 rounded-xl glass flex items-center justify-center shrink-0"><Icon name={interest.icon} size={22} /></span>
       <div>
         <h3 className="font-semibold text-tx-primary mb-1 flex items-center gap-1.5">
           {interest.title}
@@ -264,7 +265,7 @@ function GamerCard({ onOpen }: { onOpen: () => void }) {
         </div>
       )}
 
-      <span className="text-3xl shrink-0 mt-0.5">{interest.icon}</span>
+      <span className="w-11 h-11 rounded-xl glass flex items-center justify-center shrink-0"><Icon name={interest.icon} size={22} /></span>
       <div>
         <h3 className="font-semibold text-tx-primary mb-1">{interest.title}</h3>
         <p className="text-sm text-tx-secondary leading-relaxed">{interest.description}</p>

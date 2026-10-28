@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { isTouchDevice, startGyroListener } from '../hooks/useTilt';
+import Icon from './Icon';
 
 const STORAGE_KEY = 'gyro-permission';
 
@@ -66,7 +67,7 @@ export default function GyroPermission() {
             whiteSpace: 'nowrap',
           }}
         >
-          <span className="text-2xl shrink-0">📱</span>
+          <Icon name="phone" size={24} className="shrink-0" />
           <div className="text-sm">
             <p className="text-tx-primary font-semibold">Enable card tilt?</p>
             <p className="text-tx-muted text-xs mt-0.5">Cards tilt as you move your phone</p>

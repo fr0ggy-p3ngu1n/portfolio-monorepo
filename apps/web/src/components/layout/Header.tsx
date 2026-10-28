@@ -5,6 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { smoothScrollTo } from '../../lib/smoothScroll';
 import { RESUME_URL } from '../../lib/api';
 import BrandMark from '../BrandMark';
+import Icon from '../Icon';
 
 const NAV_SECTIONS = [
   { label: 'Skills',     id: 'skills'     },
@@ -117,7 +118,7 @@ export default function Header() {
             whileTap={{ scale: 0.95 }}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            <span className="text-base leading-none">{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={15} />
             <span className="text-xs">{theme === 'dark' ? 'Light' : 'Dark'}</span>
           </motion.button>
         </nav>
@@ -215,7 +216,8 @@ export default function Header() {
                 onClick={() => { toggle(); setMenuOpen(false); }}
                 className="py-3 text-sm font-medium text-tx-secondary hover:text-tx-primary transition-colors flex items-center gap-2 text-left cursor-pointer border-t border-bd-secondary"
               >
-                {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+                <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={16} />
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </motion.button>
             </nav>
           </motion.div>
