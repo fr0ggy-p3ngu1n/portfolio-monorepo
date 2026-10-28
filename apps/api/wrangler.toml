@@ -5,6 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 # Served at api.matthewsullivan.dev; wrangler creates the DNS record on deploy.
 routes = [{ pattern = "api.matthewsullivan.dev", custom_domain = true }]
+workers_dev = false
 
 # Bundle .wasm files as pre-compiled WebAssembly modules.
 # Cloudflare Workers disallows runtime WASM compilation (WebAssembly.compile /
