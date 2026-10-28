@@ -12,7 +12,7 @@ const TECH_NOTES = [
   },
   {
     title: 'Dynamic OG image (WASM pipeline)',
-    body: 'GET /api/og returns a 1200×630 PNG for og:image. The pipeline: satori/standalone converts a JSX-like element tree to SVG using Inter font data fetched from jsDelivr at cold-start; @cf-wasm/resvg/workerd renders that SVG to PNG via a Rust-powered WebAssembly renderer. Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wrangler\'s CompiledWasm rule. Cloudflare Workers blocks runtime WASM compilation from raw bytes but allows instantiation of pre-compiled WebAssembly.Module objects. The yoga WASM binary is extracted from yoga-layout\'s base64-embedded bundle so its Emscripten glue code matches exactly. On any error the route issues a 302 to the static /og-image.png fallback. The page\'s own og:image is a snapshot of this output served as a static file, because some link-preview crawlers give up on a 1.5 s cold render.',
+    body: 'GET /api/og returns a 1200×630 PNG for og:image. The pipeline: satori/standalone converts a JSX-like element tree to SVG using Inter font data fetched from jsDelivr at cold-start; @cf-wasm/resvg/workerd renders that SVG to PNG via a Rust-powered WebAssembly renderer. Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wrangler\'s CompiledWasm rule. Cloudflare Workers blocks runtime WASM compilation from raw bytes but allows instantiation of pre-compiled WebAssembly.Module objects. The yoga WASM binary is extracted from yoga-layout\'s base64-embedded bundle so its Emscripten glue code matches exactly. On any error the route issues a 302 to the static /og-image.png fallback. The page\'s own og:image is a static brand card instead (/og-image.png, versioned with ?v=), because some link-preview crawlers give up on a 1.5 s cold render and LinkedIn caches images by URL.',
   },
   {
     title: 'Audio synthesis (no audio files)',
@@ -29,7 +29,7 @@ function TechNote() {
         onClick={() => { setOpen(o => !o); if (open) setExpandedIdx(null); }}
         className="flex items-center justify-between w-full text-left group cursor-pointer"
       >
-        <span className="text-xs font-semibold text-tx-amber tracking-wider uppercase">Technical Notes</span>
+        <span className="text-xs font-semibold text-tx-accent tracking-wider uppercase">Technical Notes</span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -116,7 +116,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
         ease: [0.21, 0.47, 0.32, 0.98],
       }}
       whileHover={{
-        boxShadow: '0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+        boxShadow: '0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(236,72,153,0.55), 0 0 64px rgba(236,72,153,0.2)',
         transition: { boxShadow: { duration: 0 } },
       }}
       onMouseMove={onMouseMove}
@@ -148,7 +148,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
         <div className="flex items-start justify-between mb-2 gap-2">
           <h3 className="font-semibold text-tx-primary">{project.title}</h3>
           {project.featured && (
-            <span className="shrink-0 text-xs glass-amber text-amber-300 px-2 py-0.5 rounded-full">
+            <span className="shrink-0 text-xs glass-accent text-pink-300 px-2 py-0.5 rounded-full">
               Featured
             </span>
           )}
@@ -175,7 +175,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-sm text-tx-amber hover:underline"
+              className="text-sm text-tx-accent hover:underline"
             >
               Live site ↗
             </a>
@@ -237,7 +237,7 @@ export default function Projects() {
           Projects
         </motion.h2>
         <motion.div
-          className="h-px w-12 bg-amber-500 mx-auto mb-12 rounded-full"
+          className="h-px w-12 bg-pink-500 mx-auto mb-12 rounded-full"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
@@ -298,7 +298,7 @@ export default function Projects() {
                         onClick={() => setSelected(project)}
                         className="w-full text-left px-5 py-4 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 cursor-pointer group"
                       >
-                        <span className="font-medium text-tx-primary group-hover:text-tx-amber transition-colors sm:w-64 shrink-0">
+                        <span className="font-medium text-tx-primary group-hover:text-tx-accent transition-colors sm:w-64 shrink-0">
                           {project.title}
                         </span>
                         <span className="text-sm text-tx-secondary line-clamp-1">{project.description}</span>
@@ -342,7 +342,7 @@ export default function Projects() {
                   <h3 className="text-xl font-bold text-tx-primary">{selected.title}</h3>
                   <div className="flex items-center gap-2 shrink-0">
                     {selected.featured && (
-                      <span className="text-xs glass-amber text-amber-300 px-2 py-0.5 rounded-full">
+                      <span className="text-xs glass-accent text-pink-300 px-2 py-0.5 rounded-full">
                         Featured
                       </span>
                     )}
@@ -381,7 +381,7 @@ export default function Projects() {
                       href={selected.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="glass-amber px-4 py-2 text-amber-200 text-sm font-semibold rounded-xl hover:text-amber-100 transition-colors"
+                      className="glass-accent px-4 py-2 text-pink-200 text-sm font-semibold rounded-xl hover:text-pink-100 transition-colors"
                     >
                       Live site ↗
                     </a>
@@ -422,7 +422,7 @@ export default function Projects() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-5xl mb-4 select-none">🧙</div>
-              <p className="font-serif text-tx-amber text-lg leading-relaxed">
+              <p className="font-serif text-tx-gold text-lg leading-relaxed">
                 {wizardQuote}
               </p>
               <button

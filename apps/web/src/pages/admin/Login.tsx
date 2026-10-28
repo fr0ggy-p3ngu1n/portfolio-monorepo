@@ -49,7 +49,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f1117]">
+    <div className="min-h-screen flex items-center justify-center bg-bg-base">
       <div className="glass w-full max-w-sm rounded-xl shadow-2xl p-8">
         <h1 className="text-2xl font-bold text-slate-100 mb-6 text-center">
           Admin Login
@@ -67,20 +67,20 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 glass rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
+              className="w-full px-3 py-2 glass rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all"
               required
               autoFocus
             />
           </div>
           {error && (
-            <p className={`text-sm ${failCount >= 3 ? 'text-amber-400 font-serif italic' : 'text-red-400'}`}>
+            <p className={`text-sm ${failCount >= 3 ? 'text-pink-400 font-serif italic' : 'text-red-400'}`}>
               {error}
             </p>
           )}
           <button
             type="submit"
             disabled={loading}
-            className="glass-amber w-full py-2 px-4 text-amber-200 font-semibold rounded-xl hover:text-amber-100 disabled:opacity-50 transition-colors"
+            className="glass-accent w-full py-2 px-4 text-pink-200 font-semibold rounded-xl hover:text-pink-100 disabled:opacity-50 transition-colors"
           >
             {loading ? 'Logging in…' : 'Log in'}
           </button>

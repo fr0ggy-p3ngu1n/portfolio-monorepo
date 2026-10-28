@@ -31,7 +31,7 @@ export default function BackToTop() {
           transition={{ type: 'spring', stiffness: 300, damping: 22 }}
           whileHover={{
             scale: 1.1,
-            boxShadow: '0 0 24px rgba(217,119,6,0.5)',
+            boxShadow: '0 0 24px rgba(236,72,153,0.5)',
             transition: { duration: 0 },
           }}
           whileTap={{ scale: 0.92 }}
@@ -40,7 +40,7 @@ export default function BackToTop() {
             smoothScrollToTop();
           }}
           style={{ bottom: 'calc(1rem + env(safe-area-inset-bottom))', right: '1rem' }}
-          className="fixed z-[9989] glass-amber w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-tx-amber font-bold text-lg cursor-pointer border-none"
+          className="fixed z-[9989] glass-accent w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-tx-accent font-bold text-lg cursor-pointer border-none"
           aria-label="Back to top"
         >
           ↑

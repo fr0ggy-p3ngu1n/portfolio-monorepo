@@ -21,7 +21,7 @@ function LinkedInCard() {
           alt="Matthew Sullivan"
           loading="lazy"
           decoding="async"
-          className="w-14 h-14 rounded-full object-cover object-top shrink-0 border-2 border-amber-500/30"
+          className="w-14 h-14 rounded-full object-cover object-top shrink-0 border-2 border-pink-500/30"
         />
         <div>
           <p className="font-bold text-tx-primary">Matthew Sullivan</p>
@@ -44,9 +44,9 @@ function LinkedInCard() {
         href="https://www.linkedin.com/in/mlsulli"
         target="_blank"
         rel="noopener noreferrer"
-        className="glass-amber text-center px-4 py-2.5 rounded-xl text-tx-amber font-semibold transition-colors flex items-center justify-center gap-2"
+        className="glass-accent text-center px-4 py-2.5 rounded-xl text-tx-accent font-semibold transition-colors flex items-center justify-center gap-2"
         whileHover={{
-          boxShadow: '0 0 20px rgba(217,119,6,0.4)',
+          boxShadow: '0 0 20px rgba(236,72,153,0.4)',
           transition: { duration: 0 },
         }}
         whileTap={{ scale: 0.97 }}
@@ -91,7 +91,7 @@ export default function Contact() {
   };
 
   const inputClass =
-    'w-full px-3 py-2 glass rounded-lg text-base md:text-sm text-tx-primary placeholder:text-tx-muted focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all';
+    'w-full px-3 py-2 glass rounded-lg text-base md:text-sm text-tx-primary placeholder:text-tx-muted focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all';
 
   return (
     <section id="contact" className="py-20 bg-bg-base">
@@ -106,7 +106,7 @@ export default function Contact() {
             Get in touch
           </h2>
           <motion.div
-            className="h-px w-12 bg-amber-500 mx-auto mb-4 rounded-full"
+            className="h-px w-12 bg-pink-500 mx-auto mb-4 rounded-full"
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
@@ -199,7 +199,7 @@ export default function Contact() {
                 disabled={status === 'loading'}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="glass-amber w-full py-2.5 text-amber-200 font-semibold rounded-xl hover:text-amber-100 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                className="glass-accent w-full py-2.5 text-pink-200 font-semibold rounded-xl hover:text-pink-100 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
               >
                 {status === 'loading' ? (
                   <>

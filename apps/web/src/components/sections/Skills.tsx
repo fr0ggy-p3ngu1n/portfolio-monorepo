@@ -84,7 +84,7 @@ function PythonItem() {
       <AnimatePresence>
         {showPrecious && (
           <motion.div
-            className="glass-modal absolute -top-24 left-1/2 -translate-x-1/2 text-tx-amber text-xs px-4 py-3 rounded-xl z-20 pointer-events-none shadow-2xl flex flex-col items-center gap-2 whitespace-nowrap"
+            className="glass-modal absolute -top-24 left-1/2 -translate-x-1/2 text-tx-accent text-xs px-4 py-3 rounded-xl z-20 pointer-events-none shadow-2xl flex flex-col items-center gap-2 whitespace-nowrap"
             initial={{ opacity: 0, y: 6, scale: 0.85 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.85 }}
@@ -109,7 +109,7 @@ const SkillCard = memo(function SkillCard({ category, icon, description, items }
       ref={ref}
       variants={card}
       whileHover={{
-        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(236,72,153,0.55), 0 0 64px rgba(236,72,153,0.2)',
         transition: { boxShadow: { duration: 0 } },
       }}
       onMouseMove={onMouseMove}
@@ -153,7 +153,7 @@ export default function Skills() {
           Skills
         </motion.h2>
         <motion.div
-          className="h-px w-12 bg-amber-500 mx-auto mb-12 rounded-full"
+          className="h-px w-12 bg-pink-500 mx-auto mb-12 rounded-full"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}

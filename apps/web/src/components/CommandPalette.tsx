@@ -151,7 +151,7 @@ export default function CommandPalette() {
                             onMouseEnter={() => setActiveIdx(idx)}
                             className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 cursor-pointer transition-colors border-none ${
                               active
-                                ? 'bg-amber-500/15 text-tx-amber'
+                                ? 'bg-pink-500/15 text-tx-accent'
                                 : 'text-tx-primary hover:bg-white/5'
                             }`}
                           >

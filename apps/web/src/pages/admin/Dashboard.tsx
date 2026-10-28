@@ -217,7 +217,7 @@ export default function Dashboard() {
                       {p.published ? (
                         <span className="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Published</span>
                       ) : (
-                        <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Draft</span>
+                        <span className="text-xs font-medium text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full">Draft</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-gray-600">

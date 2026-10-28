@@ -61,8 +61,8 @@ export default function GyroPermission() {
           className="fixed left-1/2 -translate-x-1/2 z-[9998] glass rounded-2xl px-5 py-4 flex items-center gap-4"
           style={{
             bottom: 'calc(6rem + env(safe-area-inset-bottom))',
-            border: '1px solid rgba(245,158,11,0.25)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 0 24px rgba(217,119,6,0.18)',
+            border: '1px solid rgba(236,72,153,0.25)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 0 24px rgba(236,72,153,0.18)',
             whiteSpace: 'nowrap',
           }}
         >
@@ -74,7 +74,7 @@ export default function GyroPermission() {
           <div className="flex flex-col gap-1.5 shrink-0 ml-2">
             <button
               onClick={handleEnable}
-              className="glass-amber rounded-lg px-3 py-1 text-amber-300 text-xs font-semibold cursor-pointer"
+              className="glass-accent rounded-lg px-3 py-1 text-pink-300 text-xs font-semibold cursor-pointer"
             >
               Enable
             </button>

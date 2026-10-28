@@ -110,7 +110,7 @@ export default function Experience() {
           Work Experience
         </motion.h2>
         <motion.div
-          className="h-px w-12 bg-amber-500 mx-auto mb-16 rounded-full"
+          className="h-px w-12 bg-pink-500 mx-auto mb-16 rounded-full"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
@@ -123,7 +123,7 @@ export default function Experience() {
 
           {/* Scroll-driven fill — fills as you scroll through the section */}
           <motion.div
-            className="absolute left-0 top-2 bottom-2 w-px bg-amber-500 hidden md:block origin-top"
+            className="absolute left-0 top-2 bottom-2 w-px bg-pink-500 hidden md:block origin-top"
             style={{ scaleY }}
           />
 
@@ -150,7 +150,7 @@ export default function Experience() {
                           href={job.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-tx-amber transition-colors"
+                          className="hover:text-tx-accent transition-colors"
                         >
                           {job.company} ↗
                         </a>
@@ -160,7 +160,7 @@ export default function Experience() {
                     </h3>
                     <span className="text-tx-muted text-sm">{job.location}</span>
                   </div>
-                  <p className="text-sm text-tx-amber font-medium mt-0.5">{job.period}</p>
+                  <p className="text-sm text-tx-accent font-medium mt-0.5">{job.period}</p>
                 </div>
 
                 {/* Roles */}
@@ -181,7 +181,7 @@ export default function Experience() {
                         <ul className="space-y-2.5 border-l border-bd-primary pl-4">
                           {role.bullets.map((b, i) => (
                             <li key={i} className="flex gap-2.5 text-sm text-tx-secondary leading-relaxed">
-                              <span className="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full bg-amber-700" />
+                              <span className="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full bg-pink-700" />
                               {b}
                             </li>
                           ))}

@@ -93,18 +93,18 @@ function img(src: string, style: Style): object {
 
 // ── OG Image layout ────────────────────────────────────────────────────────────
 function buildOG(): object {
-  const AMBER  = '#f59e0b';
-  const SLATE  = '#94a3b8';
-  const MUTED  = '#64748b';
-  const BG     = '#0f1117';
+  const PINK   = '#ec4899';
+  const MIST   = '#f7f5fb';
+  const LILAC  = '#c9c2da';
+  const BG     = '#0e0b18';
   const TAGS   = ['React', '.NET', 'Azure', 'iOS'];
 
   return div(
-    // Root — full canvas, dark background with the same amber dot-grid used in the hero
+    // Root — full canvas, ink background with the same pink dot-grid used in the hero
     {
       width: '1200px', height: '630px',
       backgroundColor: BG,
-      backgroundImage: 'radial-gradient(circle, rgba(217,119,6,0.18) 1.5px, transparent 1.5px)',
+      backgroundImage: 'radial-gradient(circle, rgba(236,72,153,0.18) 1.5px, transparent 1.5px)',
       backgroundSize: '28px 28px',
       fontFamily: 'Inter',
       position: 'relative',
@@ -113,7 +113,7 @@ function buildOG(): object {
     // Gradient overlay — darkens corners so text reads cleanly over the dot grid
     div({
       position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'linear-gradient(135deg, rgba(15,17,23,0.88) 0%, rgba(15,17,23,0.25) 55%, rgba(15,17,23,0.88) 100%)',
+      background: 'linear-gradient(135deg, rgba(14,11,24,0.88) 0%, rgba(14,11,24,0.25) 55%, rgba(14,11,24,0.88) 100%)',
     }),
 
     // Content row — left copy block + right avatar
@@ -130,19 +130,14 @@ function buildOG(): object {
       div(
         { flexDirection: 'column', flex: 1 },
 
-        // Amber accent bar (mirrors the section dividers used throughout the site)
-        div({ width: '48px', height: '4px', backgroundColor: AMBER, borderRadius: '2px', marginBottom: '28px' }),
+        // Pink→violet accent bar (mirrors the section dividers used throughout the site)
+        div({ width: '48px', height: '4px', backgroundImage: 'linear-gradient(90deg, #ec4899, #a78bfa)', borderRadius: '2px', marginBottom: '28px' }),
 
-        // Name — styled to match the header `<Matthew Sullivan />` branding
-        div(
-          { flexDirection: 'row', alignItems: 'baseline', marginBottom: '16px', gap: '0px', flexWrap: 'nowrap' },
-          span({ fontSize: '62px', fontWeight: 700, color: AMBER, lineHeight: 1.05, letterSpacing: '-1px' }, '<'),
-          span({ fontSize: '62px', fontWeight: 700, color: AMBER, lineHeight: 1.05, letterSpacing: '-1px' }, 'Matthew Sullivan'),
-          span({ fontSize: '62px', fontWeight: 700, color: AMBER, lineHeight: 1.05, letterSpacing: '-1px' }, ' />'),
-        ),
+        // Name
+        span({ fontSize: '64px', fontWeight: 700, color: MIST, lineHeight: 1.05, letterSpacing: '-1px', marginBottom: '16px' }, 'Matthew Sullivan'),
 
-        span({ fontSize: '28px', fontWeight: 400, color: SLATE, marginBottom: '10px' }, 'Full-Stack Software Engineer'),
-        span({ fontSize: '20px', fontWeight: 400, color: MUTED, marginBottom: '40px' }, 'Currently building at EHMA.ai'),
+        span({ fontSize: '28px', fontWeight: 400, color: PINK, marginBottom: '10px' }, 'Full-Stack Developer'),
+        span({ fontSize: '20px', fontWeight: 400, color: LILAC, marginBottom: '40px' }, 'Currently building at EHMA.ai'),
 
         // Tech stack pill tags
         div(
@@ -151,21 +146,21 @@ function buildOG(): object {
             div(
               {
                 padding: '8px 18px',
-                border: '1px solid rgba(245,158,11,0.38)',
+                border: '1px solid rgba(236,72,153,0.38)',
                 borderRadius: '999px',
-                backgroundColor: 'rgba(245,158,11,0.07)',
+                backgroundColor: 'rgba(236,72,153,0.07)',
               },
-              span({ fontSize: '18px', fontWeight: 400, color: AMBER }, tag),
+              span({ fontSize: '18px', fontWeight: 400, color: PINK }, tag),
             ),
           ),
         ),
       ),
 
-      // ── Right: circular avatar with amber ring ──────────────────────────────
+      // ── Right: circular avatar with pink ring ──────────────────────────────
       div(
         { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
         div(
-          { width: '210px', height: '210px', borderRadius: '50%', border: `4px solid ${AMBER}`, overflow: 'hidden' },
+          { width: '210px', height: '210px', borderRadius: '50%', border: `4px solid ${PINK}`, overflow: 'hidden' },
           img('https://matthewsullivan.dev/avatar.jpg', { width: '210px', height: '210px', objectFit: 'cover', objectPosition: 'top' }),
         ),
       ),
@@ -174,7 +169,7 @@ function buildOG(): object {
     // URL — bottom-right watermark
     div(
       { position: 'absolute', bottom: '40px', right: '80px' },
-      span({ fontSize: '20px', fontWeight: 400, color: 'rgba(245,158,11,0.6)', letterSpacing: '0.5px' }, 'matthewsullivan.dev'),
+      span({ fontSize: '20px', fontWeight: 400, color: '#a78bfa', letterSpacing: '0.5px' }, 'matthewsullivan.dev'),
     ),
   );
 }

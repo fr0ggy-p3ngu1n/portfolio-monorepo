@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { smoothScrollTo } from '../../lib/smoothScroll';
 import { RESUME_URL } from '../../lib/api';
+import BrandMark from '../BrandMark';
 
 const NAV_SECTIONS = [
   { label: 'Skills',     id: 'skills'     },
@@ -43,12 +44,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 header-bg backdrop-blur-sm border-b border-bd-primary">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center text-lg font-bold text-tx-primary">
-          <span>
-            <span className="text-tx-amber">&lt;</span>
-            Matthew Sullivan
-            <span className="text-tx-amber"> /&gt;</span>
-          </span>
+        <Link to="/" className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-tx-primary">
+          <BrandMark className="w-8 h-8 shrink-0" />
+          <span>Matthew Sullivan</span>
         </Link>
 
         {/* Desktop nav */}
@@ -67,7 +65,7 @@ export default function Header() {
               onClick={() => smoothScrollTo(id)}
               className={`transition-colors cursor-pointer ${
                 activeId === id
-                  ? 'text-tx-amber'
+                  ? 'text-tx-accent'
                   : 'text-tx-secondary hover:text-tx-primary'
               }`}
             >
@@ -78,16 +76,16 @@ export default function Header() {
             href="https://www.linkedin.com/in/mlsulli"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-tx-secondary hover:text-tx-amber transition-colors"
+            className="text-tx-secondary hover:text-tx-accent transition-colors"
           >
             LinkedIn ↗
           </a>
           <motion.a
             href={RESUME_URL}
             download="Matthew Sullivan - Resume.pdf"
-            className="glass-amber relative overflow-hidden px-3 py-1.5 text-amber-300 hover:text-amber-100 rounded-lg transition-colors flex items-center gap-1"
+            className="glass-accent relative overflow-hidden px-3 py-1.5 text-pink-300 hover:text-pink-100 rounded-lg transition-colors flex items-center gap-1"
             whileHover={{
-              boxShadow: '0 0 20px rgba(217,119,6,0.45)',
+              boxShadow: '0 0 20px rgba(236,72,153,0.45)',
               transition: { boxShadow: { duration: 0 } },
             }}
             whileTap={{ scale: 0.97 }}
@@ -104,16 +102,16 @@ export default function Header() {
               className="absolute inset-0 animate-shimmer pointer-events-none"
               style={{
                 background:
-                  'linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.35) 50%, transparent 100%)',
+                  'linear-gradient(90deg, transparent 0%, rgba(236,72,153,0.35) 50%, transparent 100%)',
                 width: '40%',
               }}
             />
           </motion.a>
           <motion.button
             onClick={toggle}
-            className="glass-amber flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold cursor-pointer"
+            className="glass-accent flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold cursor-pointer"
             whileHover={{
-              boxShadow: '0 0 20px rgba(217,119,6,0.45)',
+              boxShadow: '0 0 20px rgba(236,72,153,0.45)',
               transition: { duration: 0 },
             }}
             whileTap={{ scale: 0.95 }}
@@ -174,8 +172,8 @@ export default function Header() {
                   onClick={() => handleNavClick(id)}
                   className={`text-left py-3 text-sm font-medium transition-colors border-b border-bd-secondary last:border-0 cursor-pointer ${
                     activeId === id
-                      ? 'text-tx-amber'
-                      : 'text-tx-secondary hover:text-tx-amber'
+                      ? 'text-tx-accent'
+                      : 'text-tx-secondary hover:text-tx-accent'
                   }`}
                 >
                   {label}
@@ -189,7 +187,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className="py-3 text-sm font-medium text-tx-secondary hover:text-tx-amber transition-colors"
+                className="py-3 text-sm font-medium text-tx-secondary hover:text-tx-accent transition-colors"
               >
                 LinkedIn ↗
               </motion.a>
@@ -200,7 +198,7 @@ export default function Header() {
                 href={RESUME_URL}
                 download="Matthew Sullivan - Resume.pdf"
                 onClick={() => setMenuOpen(false)}
-                className="py-3 text-sm font-medium text-tx-amber transition-colors flex items-center gap-1"
+                className="py-3 text-sm font-medium text-tx-accent transition-colors flex items-center gap-1"
               >
                 <span>Resume</span>
                 <motion.span

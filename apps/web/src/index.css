@@ -1,27 +1,48 @@
 @import "tailwindcss";
 
+/* Brand type, self-hosted (variable fonts, latin subset). Inter: SIL OFL; JetBrains Mono: SIL OFL. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-var.woff2') format('woff2');
+}
+
 :root {
-  --bg-base:     #0f1117;
-  --bg-surface:  #161a28;
-  --bg-header:   #0c0f1d;
-  --bd-primary:  #2a2d3e;
-  --bd-secondary:#1e2130;
-  --tx-primary:  #f1f5f9;
-  --tx-secondary:#94a3b8;
-  --tx-muted:    #64748b;
-  --tx-amber:    #f59e0b;
+  /* Brand: ink, pink, violet (see /brand and brand/README.md) */
+  --bg-base:     #0e0b18;
+  --bg-surface:  #151122;
+  --bg-header:   #0b0914;
+  --bd-primary:  #2a2340;
+  --bd-secondary:#1d1830;
+  --tx-primary:  #f7f5fb;
+  --tx-secondary:#b9b0cc;
+  --tx-muted:    #8f86a8;
+  --tx-accent:   #ec4899;
+  --tx-accent-2: #a78bfa;
+  --tx-gold:     #f59e0b; /* LOTR easter eggs keep their gold */
 }
 
 html.light {
   --bg-base:     #ffffff;
-  --bg-surface:  #f8fafc;
+  --bg-surface:  #faf8fd;
   --bg-header:   #ffffff;
-  --bd-primary:  #e2e8f0;
-  --bd-secondary:#cbd5e1;
-  --tx-primary:  #0f172a;
-  --tx-secondary:#475569;
-  --tx-muted:    #94a3b8;
-  --tx-amber:    #92400e;
+  --bd-primary:  #e7e1f0;
+  --bd-secondary:#d6cce6;
+  --tx-primary:  #1a1328;
+  --tx-secondary:#4b4160;
+  --tx-muted:    #6e6487;
+  --tx-accent:   #be185d;
+  --tx-accent-2: #7c3aed;
+  --tx-gold:     #92400e;
 }
 
 @theme inline {
@@ -33,7 +54,11 @@ html.light {
   --color-tx-primary:  var(--tx-primary);
   --color-tx-secondary:var(--tx-secondary);
   --color-tx-muted:    var(--tx-muted);
-  --color-tx-amber:    var(--tx-amber);
+  --color-tx-accent:   var(--tx-accent);
+  --color-tx-accent-2: var(--tx-accent-2);
+  --color-tx-gold:     var(--tx-gold);
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 html {
@@ -82,18 +107,18 @@ html.light .glass {
   box-shadow: 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 html.light .glass-modal {
-  background: linear-gradient(160deg, rgba(255,255,255,0.97) 0%, rgba(248,250,252,0.98) 100%);
+  background: linear-gradient(160deg, rgba(255,255,255,0.97) 0%, rgba(250,248,253,0.98) 100%);
   border: 1px solid rgba(0,0,0,0.1);
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
 }
-html.light .glass-amber {
-  background: linear-gradient(160deg, rgba(217,119,6,0.22) 0%, rgba(180,83,9,0.12) 100%);
-  border: 1px solid rgba(217,119,6,0.45);
-  box-shadow: 0 4px 20px rgba(217,119,6,0.2), inset 0 1px 0 rgba(255,200,50,0.3);
-  color: #92400e;
+html.light .glass-accent {
+  background: linear-gradient(160deg, rgba(236,72,153,0.22) 0%, rgba(190,24,93,0.12) 100%);
+  border: 1px solid rgba(236,72,153,0.45);
+  box-shadow: 0 4px 20px rgba(236,72,153,0.2), inset 0 1px 0 rgba(255,182,220,0.3);
+  color: #be185d;
 }
-html.light .glass-amber:hover {
-  color: #78350f;
+html.light .glass-accent:hover {
+  color: #9d174d;
 }
 
 /* Skill / project tag pills */
@@ -101,12 +126,12 @@ html.light .glass-amber:hover {
   background: linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%);
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border: 1px solid rgba(245,158,11,0.38);
+  border: 1px solid rgba(236,72,153,0.38);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
 html.light .tag {
-  background: linear-gradient(160deg, rgba(245,158,11,0.10) 0%, rgba(217,119,6,0.05) 100%);
-  border: 1px solid rgba(146,64,14,0.32);
+  background: linear-gradient(160deg, rgba(236,72,153,0.10) 0%, rgba(236,72,153,0.05) 100%);
+  border: 1px solid rgba(190,24,93,0.32);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
@@ -132,6 +157,14 @@ html.light .tag {
 
 .animate-dot-drift {
   animation: dot-drift 8s linear infinite;
+}
+
+/* Hero name: brand gradient; deeper stops in light mode so it keeps 3:1+ on white */
+.name-gradient {
+  background-image: linear-gradient(135deg, #ec4899 0%, #a78bfa 50%, #ec4899 100%);
+}
+html.light .name-gradient {
+  background-image: linear-gradient(135deg, #be185d 0%, #7c3aed 50%, #be185d 100%);
 }
 
 .animate-gradient-sweep {
@@ -172,8 +205,8 @@ html.light .tag {
 .glass-modal {
   background: linear-gradient(
     160deg,
-    rgba(22, 26, 40, 0.97) 0%,
-    rgba(15, 17, 23, 0.98) 100%
+    rgba(21, 17, 34, 0.97) 0%,
+    rgba(14, 11, 24, 0.98) 100%
   );
   backdrop-filter: blur(24px) saturate(140%);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
@@ -198,17 +231,17 @@ html.light .tag {
     inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-.glass-amber {
+.glass-accent {
   background: linear-gradient(
     160deg,
-    rgba(245, 158, 11, 0.22) 0%,
-    rgba(217, 119, 6, 0.10) 100%
+    rgba(236,72,153, 0.22) 0%,
+    rgba(236,72,153, 0.10) 100%
   );
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(236,72,153, 0.3);
   box-shadow:
-    0 4px 20px rgba(217, 119, 6, 0.25),
-    inset 0 1px 0 rgba(255, 200, 50, 0.22),
+    0 4px 20px rgba(236,72,153, 0.25),
+    inset 0 1px 0 rgba(255,182,220, 0.22),
     inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }

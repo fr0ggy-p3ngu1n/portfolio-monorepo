@@ -21,3 +21,4 @@ This is a single-page portfolio. Everything below is on https://matthewsullivan.
 - [LinkedIn](https://www.linkedin.com/in/mlsulli)
 - [GitHub](https://github.com/fr0ggy-p3ngu1n)
 - Contact form: https://matthewsullivan.dev/#contact
+- Brand (logo, colours, type): https://matthewsullivan.dev/brand/

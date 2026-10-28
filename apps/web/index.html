@@ -13,7 +13,12 @@
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#0f1117" />
+    <meta name="theme-color" content="#0e0b18" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Brand fonts (self-hosted); preloaded so the hero doesn't swap fonts visibly -->
+    <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-latin-var.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Apply a saved light theme before first paint (its sha256 is allowed in public/_headers) -->
     <script>try{if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light')}catch(e){}</script>
@@ -53,9 +58,9 @@
     <!-- WebKit scrollbar (inline to bypass Tailwind CSS optimizer which strips ::-webkit- prefix) -->
     <style>
       ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: var(--bg-surface, #161a28); }
-      ::-webkit-scrollbar-thumb { background: var(--bd-primary, #2a2d3e); border-radius: 9999px; }
-      ::-webkit-scrollbar-thumb:hover { background: var(--tx-amber, #f59e0b); }
+      ::-webkit-scrollbar-track { background: var(--bg-surface, #151122); }
+      ::-webkit-scrollbar-thumb { background: var(--bd-primary, #2a2340); border-radius: 9999px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--tx-accent, #ec4899); }
     </style>
 
     <!-- Open Graph -->
@@ -64,8 +69,8 @@
     <meta property="og:site_name"   content="Matthew Sullivan" />
     <meta property="og:title"       content="Matthew Sullivan — Full-Stack Software Engineer" />
     <meta property="og:description" content="Full-stack developer at EHMA.ai, where I build wAve. I also make Sprout AAC, a free, open-source communication app for kids." />
-    <meta property="og:image"       content="https://matthewsullivan.dev/og-image.png?v=2" />
-    <meta property="og:image:alt"   content="Matthew Sullivan, Full-Stack Software Engineer" />
+    <meta property="og:image"       content="https://matthewsullivan.dev/og-image.png?v=3" />
+    <meta property="og:image:alt"   content="Matthew Sullivan, Full-Stack Developer: the MS signal logo on a dark background" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type"   content="image/png" />
@@ -79,7 +84,7 @@
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content="Matthew Sullivan — Full-Stack Software Engineer" />
     <meta name="twitter:description" content="Full-stack developer at EHMA.ai, where I build wAve. I also make Sprout AAC, a free, open-source communication app for kids." />
-    <meta name="twitter:image"       content="https://matthewsullivan.dev/og-image.png?v=2" />
+    <meta name="twitter:image"       content="https://matthewsullivan.dev/og-image.png?v=3" />
   </head>
   <body>
     <div id="root"></div>

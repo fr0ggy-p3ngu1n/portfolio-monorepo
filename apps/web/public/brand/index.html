@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Brand | Matthew Sullivan</title>
+  <meta name="description" content="Matthew Sullivan's logo, colours, and type, with files to download and how to use them." />
+  <link rel="canonical" href="https://matthewsullivan.dev/brand/" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0e0b18" />
+  <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://matthewsullivan.dev/brand/" />
+  <meta property="og:site_name" content="Matthew Sullivan" />
+  <meta property="og:title" content="Brand — Matthew Sullivan" />
+  <meta property="og:description" content="The MS signal mark, colours, and type, with files to download." />
+  <meta property="og:image" content="https://matthewsullivan.dev/og-image.png?v=3" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="Matthew Sullivan, Full-Stack Developer: the MS signal logo on a dark background" />
+  <meta name="author" content="Matthew Sullivan" />
+  <meta name="publish_date" property="og:publish_date" content="2026-10-28T00:00:00Z" />
+  <meta property="article:published_time" content="2026-10-28T00:00:00Z" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://matthewsullivan.dev/og-image.png?v=3" />
+
+  <style>
+    @font-face { font-family: 'Inter'; font-weight: 100 900; font-display: swap; src: url('/fonts/inter-latin-var.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 100 800; font-display: swap; src: url('/fonts/jetbrains-mono-latin-var.woff2') format('woff2'); }
+    :root { --ink: #0e0b18; --surface: #151122; --line: #2a2340; --text: #f7f5fb; --text-2: #b9b0cc; --muted: #8f86a8; --pink: #ec4899; --violet: #a78bfa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--ink); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--violet); }
+    a:hover { color: var(--pink); }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    header { border-bottom: 1px solid var(--line); }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .home { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+    .home img { width: 32px; height: 32px; }
+    .back { font-size: 14px; text-decoration: none; }
+    main { padding: 64px 0 96px; }
+    h1 { font-size: 52px; line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 16px; }
+    h2 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 12px; }
+    h3 { font-size: 17px; margin: 0 0 8px; }
+    .lede { color: var(--text-2); font-size: 18px; max-width: 640px; margin: 0 0 56px; }
+    section { margin-bottom: 64px; }
+    .sub { color: var(--text-2); max-width: 640px; margin: 0 0 28px; }
+    .grid { display: grid; gap: 16px; }
+    @media (min-width: 640px) { .g3 { grid-template-columns: repeat(3, 1fr); } .g2 { grid-template-columns: repeat(2, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 639px) { .g4 { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 40px; } }
+    .tile { border: 1px solid var(--line); border-radius: 18px; padding: 28px; display: flex; flex-direction: column; align-items: center; gap: 16px; margin: 0; }
+    .tile img { width: 120px; height: 120px; }
+    .tile figcaption { font-size: 14px; color: var(--muted); }
+    .on-white { background: #fff; } .on-white figcaption { color: #6e6487; }
+    .on-grad { background: linear-gradient(135deg, var(--pink), var(--violet)); border-color: transparent; } .on-grad figcaption { color: #fff; }
+    .dl { display: flex; justify-content: space-between; gap: 12px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); text-decoration: none; font-size: 15px; }
+    .dl:hover { border-color: var(--violet); color: var(--text); }
+    .dl span:last-child { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    ul.donts { list-style: none; padding: 0; margin: 0; }
+    ul.donts li { color: var(--text-2); padding: 4px 0 4px 24px; position: relative; }
+    ul.donts li::before { content: '✕'; position: absolute; left: 0; color: #f9a8d4; }
+    p.body { color: var(--text-2); margin: 0 0 20px; }
+    .swatch { all: unset; cursor: pointer; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: block; }
+    .swatch:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+    .swatch .chip { display: block; height: 84px; }
+    .swatch .meta { display: block; padding: 12px 14px; background: var(--surface); }
+    .swatch .name { display: block; font-weight: 600; }
+    .swatch .hex { display: block; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-2); margin-top: 2px; }
+    .swatch .use { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .gradient-bar { margin-top: 16px; height: 56px; border-radius: 16px; background: linear-gradient(90deg, var(--pink), var(--violet)); display: flex; align-items: center; padding: 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); }
+    .spec { border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+    .spec .label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    .grad-text { background: linear-gradient(90deg, var(--pink), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; font-size: 14px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a class="home" href="/"><img src="/brand/ms-mark.svg" alt="" width="32" height="32" />Matthew Sullivan</a>
+      <a class="back" href="/">← Back to the site</a>
+    </div>
+  </header>
+
+  <main class="wrap" id="main-content">
+    <h1>Brand</h1>
+    <p class="lede">The logo, colours, and type I use across this site, GitHub, and LinkedIn. If you're writing about me or linking to my work, use these files as they are.</p>
+
+    <section aria-labelledby="mark-h">
+      <h2 id="mark-h">The mark</h2>
+      <p class="sub">An M drawn as a signal that turns into an S drawn as a circuit trace, with a solder pad at each end. The signal is for music and oscilloscopes, the trace is for where I started (embedded systems), and the one continuous line is the path from hardware to full stack.</p>
+      <div class="grid g3">
+        <figure class="tile"><img src="/brand/downloads/ms-mark.svg" alt="MS mark on ink" /><figcaption>On ink</figcaption></figure>
+        <figure class="tile on-white"><img src="/brand/downloads/ms-mark.svg" alt="MS mark on white" /><figcaption>On white</figcaption></figure>
+        <figure class="tile on-grad"><img src="/brand/downloads/ms-mark-white.svg" alt="White MS mark on the pink to violet gradient" /><figcaption>White, on the gradient</figcaption></figure>
+      </div>
+
+      <h3 style="margin-top:36px">Downloads</h3>
+      <div class="grid g2">
+        <a class="dl" href="/brand/downloads/ms-mark.svg" download><span>Mark, full colour</span><span>SVG</span></a>
+        <a class="dl" href="/brand/downloads/ms-mark-1024.png" download><span>Mark, full colour</span><span>PNG · 1024</span></a>
+        <a class="dl" href="/brand/downloads/ms-mark-white.svg" download><span>Mark, white</span><span>SVG</span></a>
+        <a class="dl" href="/brand/downloads/ms-mark-ink.svg" download><span>Mark, single colour</span><span>SVG</span></a>
+        <a class="dl" href="/brand/downloads/ms-icon.svg" download><span>Icon (mark on ink tile)</span><span>SVG</span></a>
+        <a class="dl" href="/brand/downloads/ms-icon-1024.png" download><span>Icon</span><span>PNG · 1024</span></a>
+        <a class="dl" href="/brand/downloads/profile-dark-1024.png" download><span>Profile picture</span><span>PNG · 1024</span></a>
+      </div>
+    </section>
+
+    <section aria-labelledby="use-h">
+      <h2 id="use-h">Using it</h2>
+      <div class="grid g2" style="gap:32px">
+        <div>
+          <h3>Space and size</h3>
+          <p class="body">Leave clear space around the ring at least as wide as one of the pads. Below about 24&nbsp;px, use the icon (the mark on its ink tile) rather than the bare mark.</p>
+          <h3>Backgrounds</h3>
+          <p class="body">The full-colour mark works on ink and on white. On photos or the pink→violet gradient, use the white version.</p>
+        </div>
+        <div>
+          <h3>Please don't</h3>
+          <ul class="donts">
+            <li>Recolour it or flip the gradient</li>
+            <li>Stretch, squash, or rotate it</li>
+            <li>Take the letters out of the ring</li>
+            <li>Add outlines, bevels, or drop shadows</li>
+            <li>Put the full-colour mark on a busy photo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="colour-h">
+      <h2 id="colour-h">Colours</h2>
+      <p class="sub">Click a swatch to copy its hex value. On white backgrounds, use the deeper pink and violet for text: the bright ones don't have enough contrast there.</p>
+      <div class="grid g4">
+        <button class="swatch" type="button" data-copy="#0E0B18"><span class="chip" style="background:#0E0B18"></span><span class="meta"><span class="name">Ink</span><span class="hex">#0E0B18</span><span class="use">Backgrounds</span></span></button>
+        <button class="swatch" type="button" data-copy="#EC4899"><span class="chip" style="background:#EC4899"></span><span class="meta"><span class="name">Pink</span><span class="hex">#EC4899</span><span class="use">Accent · 5.5:1 on ink</span></span></button>
+        <button class="swatch" type="button" data-copy="#A78BFA"><span class="chip" style="background:#A78BFA"></span><span class="meta"><span class="name">Violet</span><span class="hex">#A78BFA</span><span class="use">Links on dark · 7.2:1</span></span></button>
+        <button class="swatch" type="button" data-copy="#F7F5FB"><span class="chip" style="background:#F7F5FB"></span><span class="meta"><span class="name">Mist</span><span class="hex">#F7F5FB</span><span class="use">Text on dark</span></span></button>
+        <button class="swatch" type="button" data-copy="#C9C2DA"><span class="chip" style="background:#C9C2DA"></span><span class="meta"><span class="name">Lilac grey</span><span class="hex">#C9C2DA</span><span class="use">Secondary text on dark</span></span></button>
+        <button class="swatch" type="button" data-copy="#BE185D"><span class="chip" style="background:#BE185D"></span><span class="meta"><span class="name">Deep pink</span><span class="hex">#BE185D</span><span class="use">Pink text on white · 6.0:1</span></span></button>
+        <button class="swatch" type="button" data-copy="#7C3AED"><span class="chip" style="background:#7C3AED"></span><span class="meta"><span class="name">Deep violet</span><span class="hex">#7C3AED</span><span class="use">Links on white · 5.7:1</span></span></button>
+      </div>
+      <div class="gradient-bar">Gradient · #EC4899 → #A78BFA</div>
+      <p class="sr-only" role="status" aria-live="polite" id="copy-status"></p>
+    </section>
+
+    <section aria-labelledby="type-h">
+      <h2 id="type-h">Type</h2>
+      <div class="spec"><div class="label">Inter · headings and body</div><div style="font-size:44px;font-weight:800;letter-spacing:-0.03em;line-height:1.1">Matthew Sullivan</div><div class="grad-text" style="font-size:24px;font-weight:700;margin-top:6px">Full-Stack Developer</div></div>
+      <div class="spec"><div class="label">JetBrains Mono · URLs, code, labels</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--violet)">matthewsullivan.dev</div></div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">© 2026 Matthew Sullivan · <a href="/">matthewsullivan.dev</a></div></footer>
+  <script src="/brand/brand.js" defer></script>
+</body>
+</html>

@@ -63,7 +63,7 @@ function TiltCard({ interest }: { interest: Interest }) {
         <h3 className="font-semibold text-tx-primary mb-1 flex items-center gap-1.5">
           {interest.title}
           {interest.href && (
-            <span className="text-xs text-tx-amber font-normal">↗</span>
+            <span className="text-xs text-tx-accent font-normal">↗</span>
           )}
         </h3>
         <p className="text-sm text-tx-secondary leading-relaxed">{interest.description}</p>
@@ -73,7 +73,7 @@ function TiltCard({ interest }: { interest: Interest }) {
 
   const sharedMotionProps = {
     whileHover: {
-      boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+      boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(236,72,153,0.55), 0 0 64px rgba(236,72,153,0.2)',
       transition: { boxShadow: { duration: 0 } },
     },
     onMouseMove,
@@ -142,7 +142,7 @@ function GooseCard({ interest }: { interest: Interest }) {
       onClick={() => { if (pointerType.current !== 'mouse') setOpen((o) => !o); }}
       onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}
       whileHover={{
-        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(236,72,153,0.55), 0 0 64px rgba(236,72,153,0.2)',
         transition: { boxShadow: { duration: 0 } },
       }}
       role="button"
@@ -179,7 +179,7 @@ function GooseCard({ interest }: { interest: Interest }) {
         width={44}
         height={44}
         decoding="async"
-        className="w-11 h-11 rounded-full object-cover shrink-0 mt-0.5 ring-2 ring-amber-500/60"
+        className="w-11 h-11 rounded-full object-cover shrink-0 mt-0.5 ring-2 ring-pink-500/60"
       />
       <div>
         <h3 className="font-semibold text-tx-primary mb-1">{interest.title}</h3>
@@ -240,7 +240,7 @@ function GamerCard({ onOpen }: { onOpen: () => void }) {
       onPointerLeave={cancelHold}
       onPointerCancel={cancelHold}
       whileHover={{
-        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(236,72,153,0.55), 0 0 64px rgba(236,72,153,0.2)',
         transition: { boxShadow: { duration: 0 } },
       }}
       className="glass rounded-xl p-6 flex gap-4 cursor-pointer select-none h-full relative overflow-hidden"
@@ -303,7 +303,7 @@ export default function AboutMe() {
           Beyond the Code
         </motion.h2>
         <motion.div
-          className="h-px w-12 bg-amber-500 mx-auto mb-4 rounded-full"
+          className="h-px w-12 bg-pink-500 mx-auto mb-4 rounded-full"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}

@@ -33,8 +33,8 @@ function NowCard() {
       <div className="flex items-center justify-between mb-5">
         <h2 id="now-heading" className="flex items-center gap-2 text-sm font-semibold text-tx-primary tracking-wide uppercase">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-60 motion-safe:animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+            <span className="absolute inline-flex h-full w-full rounded-full bg-pink-500 opacity-60 motion-safe:animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-pink-500" />
           </span>
           Now
         </h2>
@@ -43,10 +43,10 @@ function NowCard() {
       <ul className="space-y-4">
         {NOW.map((item) => (
           <li key={item.label}>
-            <p className="text-xs font-mono text-tx-amber/80 mb-0.5">{item.label}</p>
+            <p className="text-xs font-mono text-tx-accent/80 mb-0.5">{item.label}</p>
             <p className="text-sm text-tx-secondary leading-relaxed">
               {item.before}
-              <a href={item.link.href} target="_blank" rel="noopener noreferrer" className="text-tx-primary font-medium hover:text-tx-amber transition-colors">
+              <a href={item.link.href} target="_blank" rel="noopener noreferrer" className="text-tx-primary font-medium hover:text-tx-accent transition-colors">
                 {item.link.text}
               </a>
               {item.after}
@@ -133,7 +133,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 -z-10 animate-dot-drift"
         style={{
-          backgroundImage: 'radial-gradient(circle, rgba(217,119,6,0.18) 1.5px, transparent 1.5px)',
+          backgroundImage: 'radial-gradient(circle, rgba(236,72,153,0.18) 1.5px, transparent 1.5px)',
           backgroundSize: '28px 28px',
         }}
       />
@@ -169,13 +169,7 @@ export default function Hero() {
                   ease: [0.21, 0.47, 0.32, 0.98],
                 }}
               >
-                <span
-                  className="bg-clip-text text-transparent animate-gradient-sweep"
-                  style={{
-                    backgroundImage:
-                      'linear-gradient(135deg, #f59e0b 0%, #d97706 40%, #f59e0b 100%)',
-                  }}
-                >
+                <span className="name-gradient bg-clip-text text-transparent animate-gradient-sweep">
                   {word}
                 </span>
               </motion.span>
@@ -183,7 +177,7 @@ export default function Hero() {
           </h1>
 
           <motion.p
-            className="text-lg font-mono text-tx-amber/80 mb-6 h-7"
+            className="text-lg font-mono text-tx-accent/80 mb-6 h-7"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.56 }}
@@ -209,7 +203,7 @@ export default function Hero() {
                 href="https://landing.ehma.ai/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-tx-amber hover:underline"
+                className="text-tx-accent hover:underline"
               >
                 EHMA.ai
               </a>
@@ -224,7 +218,7 @@ export default function Hero() {
                 href="https://sproutaac.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-tx-amber hover:underline"
+                className="text-tx-accent hover:underline"
               >
                 Sprout AAC
               </a>
@@ -261,14 +255,14 @@ export default function Hero() {
                   onClick={() => smoothScrollTo(section!)}
                   whileHover={{
                     boxShadow: primary
-                      ? '0 0 28px rgba(217,119,6,0.6), 0 0 56px rgba(217,119,6,0.2)'
+                      ? '0 0 28px rgba(236,72,153,0.6), 0 0 56px rgba(236,72,153,0.2)'
                       : '0 0 24px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.25)',
                     transition: { boxShadow: { duration: 0 } },
                   }}
                   whileTap={{ scale: 0.97 }}
                   className={
                     primary
-                      ? 'glass-amber px-6 py-3 text-amber-200 font-semibold rounded-xl hover:text-amber-100 transition-colors'
+                      ? 'glass-accent px-6 py-3 text-pink-200 font-semibold rounded-xl hover:text-pink-100 transition-colors'
                       : 'glass px-6 py-3 text-tx-primary font-medium rounded-xl hover:text-white transition-colors'
                   }
                 >
@@ -290,7 +284,7 @@ export default function Hero() {
         transition={{ delay: 1.4, duration: 0.8 }}
       >
         <motion.div
-          className="w-px h-10 bg-amber-700 origin-top"
+          className="w-px h-10 bg-pink-700 origin-top"
           animate={{ scaleY: [0, 1, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
         />

@@ -29,7 +29,7 @@ export default function Education() {
           Education
         </motion.h2>
         <motion.div
-          className="h-px w-12 bg-amber-500 mx-auto mb-12 rounded-full"
+          className="h-px w-12 bg-pink-500 mx-auto mb-12 rounded-full"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
@@ -43,7 +43,7 @@ export default function Education() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, delay: 0.1 }}
           whileHover={{
-            boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+            boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(236,72,153,0.55), 0 0 64px rgba(236,72,153,0.2)',
             transition: { boxShadow: { duration: 0 } },
           }}
           onMouseMove={onMouseMove}
@@ -58,14 +58,14 @@ export default function Education() {
             <h3 className="text-lg font-bold text-tx-primary">
               Arizona State University — Polytechnic Campus
             </h3>
-            <p className="text-tx-amber font-medium text-sm mt-0.5">
+            <p className="text-tx-accent font-medium text-sm mt-0.5">
               Bachelor of Science in Software Engineering
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
               {HONORS.map((h) => (
                 <span
                   key={h}
-                  className="glass-amber text-xs font-medium px-2.5 py-1 rounded-full text-amber-300"
+                  className="glass-accent text-xs font-medium px-2.5 py-1 rounded-full text-pink-300"
                 >
                   {h}
                 </span>

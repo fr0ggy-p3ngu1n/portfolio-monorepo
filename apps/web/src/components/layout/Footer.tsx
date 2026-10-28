@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
+import BrandMark from '../BrandMark';
 
 const INSCRIPTION =
   'One Ring to rule them all, One Ring to find them, One Ring to bring them all, and in the darkness bind them.';
@@ -27,7 +28,7 @@ export default function Footer() {
 
         {/* Monogram */}
         <div className="flex justify-center">
-          <img src="/favicon.svg" alt="MS" className="w-10 h-10 opacity-60" />
+          <BrandMark className="w-10 h-10 opacity-80" />
         </div>
 
         {/* Stack badges */}
@@ -54,9 +55,13 @@ export default function Footer() {
             href="https://github.com/fr0ggy-p3ngu1n/portfolio-monorepo"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-tx-secondary hover:text-tx-amber transition-colors"
+            className="text-tx-secondary hover:text-tx-accent transition-colors"
           >
             GitHub ↗
+          </a>
+          {' · '}
+          <a href="/brand/" className="text-tx-secondary hover:text-tx-accent transition-colors">
+            Brand
           </a>
           {' · '}
           <span
