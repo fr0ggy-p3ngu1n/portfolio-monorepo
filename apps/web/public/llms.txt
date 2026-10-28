@@ -1,12 +1,13 @@
 # Matthew Sullivan
 
-> Full-stack software engineer in Arizona. He is a Full-Stack Developer at EHMA.ai, working on wAve, an AI-powered solar sales platform, and builds Sprout AAC, a free, open-source communication app for kids, in his own time.
+> Full-Stack Developer in Arizona. At EHMA.ai he works on wAve, an AI-powered solar sales platform. In his own time he builds free, open-source accessibility tools: Sprout AAC, a communication app for kids, and ClearPath, a browser extension that makes websites easier to read.
 
-This is a single-page portfolio. Everything below is on https://matthewsullivan.dev/.
+The portfolio is a single page at https://matthewsullivan.dev/, plus a brand guide at https://matthewsullivan.dev/brand/.
 
 ## Work
 - EHMA.ai: owns wAve across the full stack. In 11 weeks set up CI/CD and monitoring, raised test coverage by 828%, cut API response times from 18 s to 316 ms, migrated 556K records with no downtime, and overhauled personal-data handling.
-- Tibit Communications (earlier): embedded and manufacturing software, including a device branding station and a network statistics web interface that ships in the Tibit/Ciena PON Manager product.
+- Ciena (2023–2025): Embedded Software Engineer and, before that, SQA Developer, after Ciena acquired Tibit.
+- Tibit Communications (2021–2023): manufacturing software engineer; built a device branding station and a network statistics web interface that ships in the Tibit/Ciena PON Manager product.
 
 ## Projects
 - [Sprout AAC](https://sproutaac.org): free, open-source AAC app built in Flutter. v0.1.0 is out for macOS; iOS/Android builds and Open Board Format support are in progress.
@@ -21,4 +22,9 @@ This is a single-page portfolio. Everything below is on https://matthewsullivan.
 - [LinkedIn](https://www.linkedin.com/in/mlsulli)
 - [GitHub](https://github.com/fr0ggy-p3ngu1n)
 - Contact form: https://matthewsullivan.dev/#contact
-- Brand (logo, colours, type): https://matthewsullivan.dev/brand/
+
+## Brand
+- Logo: the "MS signal mark", a waveform M that turns into a circuit-trace S with a solder pad at each end, inside a pink-to-violet ring. The M is a signal (music, oscilloscopes), the S a PCB trace (embedded roots).
+- Colours: ink #0E0B18 background, pink #EC4899, violet #A78BFA; deep pink #BE185D and deep violet #7C3AED for text on white.
+- Type: Inter and JetBrains Mono.
+- Guide and downloads: https://matthewsullivan.dev/brand/
