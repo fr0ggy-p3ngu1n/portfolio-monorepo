@@ -1,6 +1,6 @@
 # Matthew Sullivan
 
-> Full-stack software engineer in Arizona. Works at EHMA.ai on wAve, an AI-powered solar sales platform, and builds Sprout AAC, a free, open-source communication app for kids, in his own time.
+> Full-stack software engineer in Arizona. He is a Full-Stack Developer at EHMA.ai, working on wAve, an AI-powered solar sales platform, and builds Sprout AAC, a free, open-source communication app for kids, in his own time.
 
 This is a single-page portfolio. Everything below is on https://matthewsullivan.dev/.
 
