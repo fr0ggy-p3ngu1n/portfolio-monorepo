@@ -4,7 +4,6 @@ const ALLOWED_ORIGINS = new Set([
   'http://localhost:5173',
   'http://localhost:4173',
   'https://matthewsullivan.dev',
-  'https://www.matthewsullivan.dev', // until the www → apex redirect is live
 ]);
 
 // Pages preview deploys (e.g. https://<branch>.portfolio-web-7v7.pages.dev)

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, lazy, Suspense } from 'react';
+import { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTilt } from '../../hooks/useTilt';
 // The game only loads when someone summons it; the hold starts the download early.
@@ -102,6 +102,92 @@ function TiltCard({ interest }: { interest: Interest }) {
       className="glass rounded-xl p-6 flex gap-4 cursor-default h-full"
     >
       {inner}
+    </motion.div>
+  );
+}
+
+// ─── Cat Dad card — Goose's photos fan out on hover / tap ─────────────────────
+const GOOSE_PHOTOS = [
+  { src: '/goose/goose-window.webp', alt: 'Goose looking up from a window perch' },
+  { src: '/goose/goose-couch.webp',  alt: 'Goose staring into the camera from the couch' },
+  { src: '/goose/goose-fridge.webp', alt: 'Goose sitting by the fridge, unimpressed' },
+  { src: '/goose/goose-floor.webp',  alt: 'Goose on the living room floor' },
+];
+const FAN_ROTATE = [-14, -5, 5, 14];
+const FAN_X      = [-150, -52, 52, 150];
+
+function GooseCard({ interest }: { interest: Interest }) {
+  const { ref, onMouseMove, onMouseLeave } = useTilt(7);
+  const [open, setOpen] = useState(false);
+  const pointerType = useRef('mouse');
+
+  // Touch: the card toggles on tap, and a tap anywhere else closes it
+  useEffect(() => {
+    if (!open || pointerType.current === 'mouse') return;
+    const close = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [open, ref]);
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={onMouseMove}
+      onPointerDown={(e) => { pointerType.current = e.pointerType; }}
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') setOpen(true); }}
+      onPointerLeave={(e) => { if (e.pointerType === 'mouse') setOpen(false); }}
+      onMouseLeave={onMouseLeave}
+      onClick={() => { if (pointerType.current !== 'mouse') setOpen((o) => !o); }}
+      onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}
+      whileHover={{
+        boxShadow: '0 20px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 32px rgba(217,119,6,0.55), 0 0 64px rgba(217,119,6,0.2)',
+        transition: { boxShadow: { duration: 0 } },
+      }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={open}
+      aria-label="Cat Dad. Show photos of Goose"
+      onKeyUp={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpen((o) => !o); }}
+      className={`glass rounded-xl p-6 flex gap-4 cursor-pointer select-none h-full relative ${open ? 'z-30' : 'z-0'}`}
+    >
+      {/* The fan sits above the card so opening it never shifts the grid */}
+      <div className="absolute left-1/2 bottom-[calc(100%-1.5rem)] pointer-events-none origin-bottom scale-[0.72] sm:scale-100" aria-hidden={!open}>
+        {GOOSE_PHOTOS.map((photo, i) => (
+          <motion.img
+            key={photo.src}
+            src={photo.src}
+            alt={photo.alt}
+            width={112}
+            height={112}
+            loading="lazy"
+            decoding="async"
+            initial={false}
+            animate={open
+              ? { opacity: 1, x: FAN_X[i] - 56, y: 0, rotate: FAN_ROTATE[i], scale: 1 }
+              : { opacity: 0, x: -56, y: 40, rotate: 0, scale: 0.6 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 24, delay: open ? i * 0.04 : 0 }}
+            className="absolute bottom-0 w-28 h-28 max-w-none rounded-md object-cover bg-white p-1.5 pb-4 shadow-[0_12px_28px_rgba(0,0,0,0.45)]"
+          />
+        ))}
+      </div>
+
+      <img
+        src="/goose/goose-squint.webp"
+        alt=""
+        width={44}
+        height={44}
+        decoding="async"
+        className="w-11 h-11 rounded-full object-cover shrink-0 mt-0.5 ring-2 ring-amber-500/60"
+      />
+      <div>
+        <h3 className="font-semibold text-tx-primary mb-1">{interest.title}</h3>
+        <p className="text-sm text-tx-secondary leading-relaxed">{interest.description}</p>
+        <p className="text-xs text-tx-muted mt-2 opacity-70">
+          {open ? 'Goose has been summoned.' : 'Hover or tap to meet Goose…'}
+        </p>
+      </div>
     </motion.div>
   );
 }
@@ -244,6 +330,8 @@ export default function AboutMe() {
             <motion.div key={interest.title} variants={item} className="h-full">
               {interest.title === 'Gamer' ? (
                 <GamerCard onOpen={() => setGameOpen(true)} />
+              ) : interest.title === 'Cat Dad' ? (
+                <GooseCard interest={interest} />
               ) : (
                 <TiltCard interest={interest} />
               )}
