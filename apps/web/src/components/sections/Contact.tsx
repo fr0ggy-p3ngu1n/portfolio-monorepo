@@ -12,7 +12,7 @@ function LinkedInCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, delay: 0.15 }}
-      className="glass rounded-xl p-6 flex flex-col gap-5 h-fit"
+      className="glass rounded-xl p-6 flex flex-col gap-5 lg:h-full"
     >
       {/* Avatar + identity */}
       <div className="flex items-center gap-4">
@@ -49,7 +49,7 @@ function LinkedInCard() {
         href="https://www.linkedin.com/in/mlsulli"
         target="_blank"
         rel="noopener noreferrer"
-        className="glass-accent text-center px-4 py-2.5 rounded-xl text-tx-accent font-semibold transition-colors flex items-center justify-center gap-2"
+        className="glass-accent text-center px-4 py-2.5 rounded-xl text-tx-accent font-semibold transition-colors flex items-center justify-center gap-2 lg:mt-auto"
         whileHover={{
           boxShadow: '0 0 20px rgba(236,72,153,0.4)',
           transition: { duration: 0 },
@@ -122,7 +122,8 @@ export default function Contact() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[5fr_8fr] gap-6 items-start">
+        {/* Desktop: both cards share a height and their buttons sit on the same line */}
+        <div className="grid grid-cols-1 lg:grid-cols-[5fr_8fr] gap-6 items-start lg:items-stretch">
           {/* LinkedIn card */}
           <LinkedInCard />
 
