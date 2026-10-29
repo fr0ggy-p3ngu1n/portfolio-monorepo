@@ -17,10 +17,11 @@ Personal portfolio and live full-stack demo.
 | Backend | Hono 4 on Cloudflare Workers |
 | Database | Cloudflare D1 (SQLite edge DB) + Prisma |
 | File Storage | Cloudflare R2 (resume PDF) |
+| WebAssembly | C compiled with clang (`wasm32`) + wasm-ld for the LED demo; satori + resvg on the Worker for images |
 | Email | Resend |
 | Auth | Single-password bcrypt + 24h HS256 JWT |
 | Monorepo | pnpm workspaces |
-| Hosting | Cloudflare Pages (web) + Cloudflare Workers (API at `api.matthewsullivan.dev`), deployed by GitHub Actions |
+| Hosting | Cloudflare Pages (web) + Cloudflare Workers (API at `api.matthewsullivan.dev`), deployed by GitHub Actions (on push, daily, and on demand) |
 
 ---
 
@@ -32,12 +33,16 @@ portfolio/
 ├── apps/
 │   ├── web/               # React SPA (Cloudflare Pages)
 │   │   ├── scripts/prerender.mjs  # Build-time render of the homepage (runs after vite build)
-│   │   ├── public/                # Favicons, fonts, og-image.png, _headers, _redirects, /brand page
+│   │   ├── scripts/activity.mjs   # GitHub contribution calendar + latest commits → public/activity.json (CI only)
+│   │   ├── wasm/                  # leds.c (LED "firmware") + build.sh → public/leds.wasm
+│   │   ├── public/                # Favicons, fonts, og-image.png, portrait/, leds.wasm, _headers, _redirects, /brand page
 │   │   └── src/
 │   │       ├── entry-server.tsx   # Server entry used by the prerender
 │   │       ├── components/
 │   │       │   ├── layout/        # Header, Footer
-│   │       │   ├── sections/      # Hero, Skills, Experience, Projects, Education, AboutMe, Contact
+│   │       │   ├── sections/      # Hero, LiveStatus, Skills, Experience, Projects, Playground, Education, AboutMe, Contact
+│   │       │   ├── playground/    # CardMaker, LedPanel, ActivityGrid
+│   │       │   ├── Portrait.tsx   # Hero headshot in the brand ring (Goose on click)
 │   │       │   ├── EasterEggs.tsx # All global easter egg listeners
 │   │       │   ├── RingRunner.tsx # Hidden LOTR canvas game
 │   │       │   ├── BrandMark.tsx  # Inline MS logo (header, footer)
@@ -53,7 +58,8 @@ portfolio/
 │   └── api/               # Hono REST API (Cloudflare Workers)
 │       └── src/
 │           ├── middleware/        # CORS, adminAuth (JWT guard)
-│           └── routes/            # auth, projects, contact, resume, og, leaderboard, analytics
+│           └── routes/            # auth, projects, contact, resume, og, leaderboard, analytics, status
+│       └── migrations/            # D1 schema migrations (0001–0005)
 └── packages/
     └── shared/            # Zod schemas + TypeScript types (consumed by both apps)
 ```
@@ -66,6 +72,13 @@ portfolio/
 - **Liquid glass UI** — all cards use layered `backdrop-filter` glass effects, in the pink→violet brand palette (see `brand/`)
 - **Pre-rendered homepage** — `scripts/prerender.mjs` renders the page to static HTML at build time with the projects inlined, so crawlers and link previews get real content and the project cards don't flash a skeleton
 - **"Now" card** — what I'm working on, next to the hero (`NOW` in `Hero.tsx`)
+- **Hero portrait** — headshot inside the MS logo's ring; on load a signal trace with the logo's "M" draws around it, the ring always orbits and glows, hover lifts it, it tilts toward the cursor, and clicking swaps in Goose (`Portrait.tsx`)
+- **"This site, right now" card** — live numbers above Skills: the Cloudflare edge that answered, the browser's round trip (with Ping again), a timed D1 query, Worker time, the deployed commits, and the latest GitHub Actions runs (`LiveStatus.tsx` + `GET /api/status`)
+- **Playground** — three live demos after Projects:
+  - *Link-preview card maker*: type a title and the Worker renders a 1200×630 card with satori + resvg, showing the round trip and edge-cache hit/miss
+  - *Firmware in your browser*: a 32×8 LED matrix driven by C written like microcontroller code (no libc, no malloc, fixed timestep), compiled to a 2.7 KB WebAssembly module; four patterns, click LEDs to draw Game of Life cells
+  - *Shipping activity*: the GitHub contribution calendar and latest commits, rebuilt daily by the deploy workflow
+- **Try it live** — project cards can link straight to a project's interactive demo (`demoUrl` / `demoLabel`, editable in the admin)
 - **Goose** — hover or tap the Cat Dad card for photos of my cat
 - **Dark / light mode** — CSS custom-property token system; preference stored in `localStorage`
 - **3-D tilt cards** — mouse-tracking perspective transform on desktop; gyroscope tilt on mobile (iOS permission flow included)
@@ -83,14 +96,16 @@ portfolio/
 
 ### Backend API
 - JWT-protected admin CRUD for projects and contact submissions
-- Contact form with Zod validation, Resend email delivery, and D1 persistence
+- Contact form with Zod validation (length-capped), Resend email delivery, and D1 persistence
+- Per-IP rate limits on every public write or render route (Workers Rate Limiting bindings in `wrangler.toml`)
+- Live status endpoint and playground card renderer (see API Routes)
 - Resume served from Cloudflare R2; updatable via admin panel without redeployment
 - Site analytics for the admin dashboard, read from Cloudflare Web Analytics through the GraphQL API
 - Shared Zod schemas between frontend and API (`packages/shared`)
 
 ### Admin Panel (`/admin`)
 - Single-password login → 24-hour JWT stored in `localStorage`
-- Manage projects (create, edit, delete)
+- Manage projects (create, edit, delete), including the optional "Try it live" demo link
 - View and mark contact submissions as read
 - Upload a new resume PDF directly to R2
 - See page views and top pages from Cloudflare Web Analytics
@@ -121,7 +136,7 @@ There are more hidden easter eggs than the ones below, all LOTR themed. None are
 - All sounds are synthesized with the Web Audio API (no audio files): jump blip, death sequence, milestone fanfare (C5→E5→G5→C6), Nazgûl shriek with LFO vibrato
 - Score milestones at 100, 500, and 1000 play a fanfare
 - Speed ramps up gradually (linear, Google-dino style) from 5.5 → 13 px/frame over ~4 minutes
-- **Persistent shared leaderboard** — top 10 scores stored in D1; on death, players with a qualifying score are prompted for a 3-character name before seeing the Hall of Fame
+- **Persistent shared leaderboard** — top 10 scores stored in D1; on death, players with a qualifying score are prompted for a 3-character name before seeing the Hall of Fame. Each run gets a signed start ticket from the API, and scores higher than the run's elapsed time allows are rejected
 - **🏆 Hall of Fame button** in the game header — view the board at any time before playing
 - **Desktop:** Space / ↑ arrow to jump, ESC to close, click the canvas to jump
 - **Mobile:** Square `aspect-square` canvas wrapper — the wide game canvas is letterboxed with the sky colour, giving a much larger play area. Tap anywhere to jump; only the ✕ and 🏆 buttons don't trigger a jump
@@ -170,14 +185,17 @@ pnpm dev
 | POST | `/api/projects` | JWT | Create project |
 | PUT | `/api/projects/:id` | JWT | Update project |
 | DELETE | `/api/projects/:id` | JWT | Delete project |
-| POST | `/api/contact` | — | Submit contact form |
+| POST | `/api/contact` | — | Submit contact form (3/min per IP) |
 | GET | `/api/contact` | JWT | List submissions |
 | PUT | `/api/contact/:id/read` | JWT | Mark as read |
 | GET | `/api/resume` | — | Stream resume PDF from R2 |
 | PUT | `/api/resume` | JWT | Replace resume PDF in R2 |
 | GET | `/api/og` | — | Dynamic 1200×630 card (PNG), a demo of satori + resvg on Workers |
+| GET | `/api/og/card` | — | Playground card from `?title=&subtitle=&theme=`; edge-cached per input, `X-Cache: HIT/MISS`, new renders 10/min per IP |
+| GET | `/api/status` | — | Live numbers for the homepage card: colo, D1 timing, Worker time, deployed commit (30/min per IP) |
 | GET | `/api/leaderboard` | — | Top 10 Ring Runner scores |
-| POST | `/api/leaderboard` | — | Submit a score (server-side qualification check) |
+| GET | `/api/leaderboard/start` | — | Signed start-of-run ticket |
+| POST | `/api/leaderboard` | — | Submit a score with its ticket (5/min per IP; scores the clock can't explain are rejected) |
 | GET | `/api/analytics` | JWT | Page views for the admin dashboard (`?days=1–90`) |
 
 ---
@@ -185,6 +203,11 @@ pnpm dev
 ## Deployment
 
 Pushing to `main` deploys automatically with GitHub Actions: `.github/workflows/deploy-web.yml` builds and pre-renders the site and deploys it to Cloudflare Pages, and `deploy-api.yml` deploys the Worker. Each only runs when its app (or `packages/`) changes.
+
+- **Web:** before building, `scripts/activity.mjs` fetches the GitHub contribution calendar with the workflow's own `GITHUB_TOKEN` and writes `public/activity.json` (gitignored; the previous file is kept if GitHub is down). The workflow also runs daily and from the Actions tab (`workflow_dispatch`) to keep that grid current. `VITE_BUILD_SHA` is passed in for the live card.
+- **API:** deployed with `--var GIT_SHA` and `--var DEPLOYED_AT` so `/api/status` can report the running commit.
+- **Database migrations are applied by hand**, before pushing code that reads new columns: `pnpm --filter api db:migrate:remote`. The homepage is pre-rendered from the live API, so if a site build lands before the API deploy, re-run **Deploy Web** from the Actions tab.
+- **WebAssembly:** `public/leds.wasm` is committed. Rebuild it after editing `wasm/leds.c` with `apps/web/wasm/build.sh` (needs `brew install llvm lld`).
 
 The site reads the API address from `apps/web/.env.production` (`VITE_API_URL=https://api.matthewsullivan.dev`); it's committed because it's a public URL baked into the bundle.
 
@@ -254,6 +277,15 @@ Both WASM binaries (yoga layout engine + resvg) are bundled at build time by Wra
 
 On any error the route issues a 302 to the static `/og-image.png` fallback on Cloudflare Pages, so social cards never break.
 
+### Live status card (`LiveStatus.tsx`, `routes/status.ts`)
+Every number is measured on the request: `request.cf.colo` for the data centre, a timed `SELECT` against D1 (Workers clocks only advance across I/O, which is what's being timed), and the deployed commit from `GIT_SHA`. The browser measures the round trip itself. GitHub Actions runs are fetched **from the browser**, not the Worker: unauthenticated GitHub API calls are limited per IP, and Cloudflare's shared egress IPs are always over that limit.
+
+### LED firmware (`apps/web/wasm/leds.c`)
+Freestanding C (`-nostdlib -ffreestanding`, one 64 KB memory page, 8 KB stack): a framebuffer of one brightness byte per LED, a fixed 16 ms timestep, xorshift randomness, and a 5×7 font table holding only the glyphs it needs. The page calls `tick(elapsedMs)` every animation frame and draws the framebuffer straight out of WebAssembly memory. It pauses off screen and starts paused with reduced motion.
+
+### Content Security Policy
+`public/_headers` sets a strict CSP. Additions for the live demos: `script-src 'wasm-unsafe-eval'` (required to instantiate WebAssembly) and `connect-src https://api.github.com` (CI runs on the live card). Its `upgrade-insecure-requests` directive breaks local testing over `http://localhost` with `wrangler pages dev`; use `pnpm dev` (Vite ignores `_headers`).
+
 ### Resume Storage
 The resume PDF lives in a Cloudflare R2 bucket (`portfolio-assets`). `GET /api/resume` streams it publicly with a 7-day `Cache-Control`; `PUT /api/resume` is JWT-protected and accepts a multipart form upload. Updating the resume requires no redeployment.
 
@@ -262,6 +294,6 @@ The MS signal mark, colours, type, and every rendered asset live in `brand/` (wi
 
 ### Performance
 - **Code splitting** — Admin routes (`Login`, `Dashboard`, `ProjectForm`, `AdminLayout`) are `React.lazy()` + `Suspense`. Non-admin visitors never download that code. Vite `manualChunks` splits React/Router and Framer Motion into separately cached vendor chunks; the main app chunk went from 472 KB → 132 KB (gzip: 146 KB → 37 KB).
-- **HTTP caching** — `GET /api/projects`: 5 min `public` cache. `GET /api/leaderboard`: 60 s `public` cache. `GET /api/resume`: 7-day `public` cache.
+- **HTTP caching** — `GET /api/projects`: 5 min `public` cache. `GET /api/leaderboard`: 60 s `public` cache. `GET /api/resume`: 7-day `public` cache. `GET /api/og/card`: cached at the edge per input for a day.
 - **Image lazy loading** — off-screen images (`loading="lazy" decoding="async"`) defer fetching until near the viewport.
 - **React rendering** — `ProjectCard` and `SkillCard` are wrapped in `memo()` to skip re-renders from unrelated state changes (theme toggle, nav intersection, etc.).
