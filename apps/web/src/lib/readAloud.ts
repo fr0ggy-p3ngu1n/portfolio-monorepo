@@ -95,16 +95,23 @@ const GENTLE_STOP = typeof navigator !== 'undefined' && /firefox/i.test(navigato
 
 type Chunk = { start: number; text: string };
 
-/** Sentences (split again at commas or spaces if over ~200 characters). */
+// In Firefox a Stop lets the current utterance finish, so utterances there
+// are short phrases (a second or so of speech) rather than whole sentences
+const MAX_CHUNK = GENTLE_STOP ? 32 : 220;
+
+/** Sentences, split again at commas or spaces when longer than MAX_CHUNK. */
 function sentences(text: string): Chunk[] {
   const out: Chunk[] = [];
   const re = /[^.!?\n]+(?:[.!?]+["')\]]*|\n|$)/g;
   for (const m of text.matchAll(re)) {
     let start = m.index ?? 0;
     let piece = m[0];
-    while (piece.length > 220) {
-      const cut = Math.max(piece.lastIndexOf(', ', 200), piece.lastIndexOf(' ', 200));
-      const at = cut > 40 ? cut + 1 : 200;
+    while (piece.length > MAX_CHUNK) {
+      const window = piece.slice(0, MAX_CHUNK);
+      const comma = window.lastIndexOf(', ');
+      const space = window.lastIndexOf(' ');
+      const cut = comma > MAX_CHUNK / 3 ? comma + 1 : space;
+      const at = cut > 8 ? cut + 1 : MAX_CHUNK;
       out.push({ start, text: piece.slice(0, at) });
       start += at;
       piece = piece.slice(at);
@@ -114,14 +121,18 @@ function sentences(text: string): Chunk[] {
   return out;
 }
 
-/** Read `root` aloud. Returns a stop function; `onEnd` runs when it finishes or stops. */
-export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
+/**
+ * Read `root` aloud. Returns a stop function, which returns true when audio is
+ * still finishing (Firefox); `onEnd` runs once the session is really over.
+ */
+export function readAloud(root: HTMLElement, onEnd: () => void): () => boolean {
   const { text, pieces } = collect(root);
   const synth = window.speechSynthesis;
   const chunks = sentences(text);
   const timers: ReturnType<typeof setTimeout>[] = [];
   let sweep: ReturnType<typeof setInterval> | null = null;
   let done = false;
+  let stopping = false;    // Firefox Stop: no more phrases, let this one finish
   let started = false;     // the engine reported speech actually starting
   let boundaries = false;  // ...and word positions
   let index = 0;
@@ -140,7 +151,7 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
     const voices = synth.getVoices();
     debugSpeech(`readAloud: ${text.length} chars, ${chunks.length} sentences, ${voices.length} voices`, voices.find((v) => v.default)?.name ?? '(no default voice)', GENTLE_STOP ? '(gentle stop)' : '');
   }
-  if (!chunks.length) { finish('no text'); return () => finish('stop'); }
+  if (!chunks.length) { finish('no text'); return () => false; }
 
   // Timed highlight for voices without word events (or no audible speech)
   const starts: number[] = [];
@@ -172,8 +183,9 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
       if (!done) mark(wordRange(pieces, chunk.start + e.charIndex));
     };
     const next = (e: Event) => {
-      if (n < 2 || e.type === 'error') debugSpeech(`sentence ${n + 1}: ${e.type}`, (e as SpeechSynthesisErrorEvent).error ?? '');
+      if (n < 2 || e.type === 'error' || stopping) debugSpeech(`sentence ${n + 1}: ${e.type}`, (e as SpeechSynthesisErrorEvent).error ?? '');
       if (current === utterance) current = null;
+      if (stopping) { finish('audio finished after stop'); return; }
       speakNext();
     };
     utterance.onend = next;
@@ -192,9 +204,22 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   if (DEBUG) for (let ms = 1000; ms <= 5000; ms += 1000) timers.push(setTimeout(() => debugSpeech(`state @${ms}ms, started=${started}`), ms));
 
   return () => {
+    if (done) return false;
+    if (stopping) return true;
+    // Firefox: a phrase handed to the engine plays no matter what (even one
+    // that hasn't started yet), so it finishes, its highlight keeps following
+    // it, and the session ends with its end event
+    if (GENTLE_STOP && current) {
+      debugSpeech('gentle stop: letting the current phrase finish');
+      stopping = true;
+      timers.forEach(clearTimeout);
+      if (sweep) { clearInterval(sweep); sweep = null; }
+      if (!boundaries) mark(null);   // timed highlight can't follow the audio
+      return true;
+    }
     finish('stopped by user');
-    if (GENTLE_STOP) debugSpeech('gentle stop: letting the current sentence finish');
-    else { debugSpeech('cancel (stop)'); synth.cancel(); }
+    if (!GENTLE_STOP) { debugSpeech('cancel (stop)'); synth.cancel(); }
+    return false;
   };
 }
 

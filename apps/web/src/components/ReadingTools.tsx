@@ -50,7 +50,12 @@ function Ruler() {
 
 export default function ReadingTools() {
   const { ruler, dyslexic, panelOpen, setPanelOpen, toggleRuler, toggleDyslexic, reading, setReading } = useReadingTools();
-  const stopRef = useRef<(() => void) | null>(null);
+  const stopRef = useRef<(() => boolean) | null>(null);
+  // A stopped Firefox phrase still playing: Read is blocked until it ends so
+  // nothing queues behind it, and actions closer than 400 ms are ignored
+  const [finishing, setFinishing] = useState(false);
+  const finishingRef = useRef(false);
+  const lastAction = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const [speech, setSpeech] = useState(false);
 
@@ -61,16 +66,39 @@ export default function ReadingTools() {
     const onAction = (e: Event) => {
       const action = (e as CustomEvent<'read' | 'stop'>).detail;
       debugSpeech(`action: ${action}`, stopRef.current ? '(stopping the current read first)' : '', `canReadAloud=${canReadAloud()}`);
-      stopRef.current?.();
+      const now = Date.now();
+      if (now - lastAction.current < 400) { debugSpeech('ignored: too soon after the last action'); return; }
+      lastAction.current = now;
+      if (action === 'read' && finishingRef.current) { debugSpeech('ignored: stopped audio is still finishing'); return; }
+      // Stop the current read. Its own clean-up may come later (in Firefox the
+      // phrase playing finishes first), so detach it now: each read only
+      // clears the reading state if it's still the current one.
+      const previous = stopRef.current;
       stopRef.current = null;
+      setReading(false);
+      if (previous?.()) { finishingRef.current = true; setFinishing(true); }
       if (action === 'read' && canReadAloud()) {
         const section = sectionInView();
         debugSpeech('section in view:', section?.id || section?.querySelector('h2')?.textContent || '(none)');
         if (!section) return;
         setReading(true);
-        stopRef.current = readAloud(section, () => { setReading(false); stopRef.current = null; });
-      } else {
-        setReading(false);
+        // onEnd can run before readAloud returns (no readable text), so
+        // `stop` is declared first and `ended` covers that case
+        let stop: (() => boolean) | null = null;
+        let ended = false;
+        stop = readAloud(section, () => {
+          ended = true;
+          if (stopRef.current !== stop) {
+            // A stopped read whose audio has now finished
+            finishingRef.current = false;
+            setFinishing(false);
+            return;
+          }
+          setReading(false);
+          stopRef.current = null;
+        });
+        if (ended) { setReading(false); return; }
+        stopRef.current = stop;
       }
     };
     window.addEventListener('reading-tools', onAction);
@@ -119,9 +147,10 @@ export default function ReadingTools() {
               <button
                 type="button"
                 onClick={() => readingToolsAction(reading ? 'stop' : 'read')}
-                className="mt-1 w-full glass-accent rounded-xl px-3 py-2.5 text-sm font-semibold text-pink-200 hover:text-pink-100 focus-visible:outline-2 focus-visible:outline-pink-400 cursor-pointer"
+                disabled={finishing && !reading}
+                className="mt-1 w-full glass-accent rounded-xl px-3 py-2.5 text-sm font-semibold text-pink-200 hover:text-pink-100 disabled:opacity-60 disabled:cursor-wait focus-visible:outline-2 focus-visible:outline-pink-400 cursor-pointer"
               >
-                {reading ? 'Stop reading' : 'Read this section aloud'}
+                {reading ? 'Stop reading' : finishing ? 'Finishing…' : 'Read this section aloud'}
               </button>
             )}
             <p className="px-3 pt-3 pb-1 text-xs text-tx-muted leading-relaxed">
