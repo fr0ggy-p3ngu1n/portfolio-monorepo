@@ -4,7 +4,7 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-F4zavktmIosTr6Is1MS0OTc90YMrn4KvMUZd6QFPlm8=' https://static.cloudflareinsights.com; connect-src 'self' https://api.matthewsullivan.dev https://cloudflareinsights.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-F4zavktmIosTr6Is1MS0OTc90YMrn4KvMUZd6QFPlm8=' https://static.cloudflareinsights.com; connect-src 'self' https://api.matthewsullivan.dev https://api.github.com https://cloudflareinsights.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
 
 # Vite fingerprints these filenames, so they can be cached forever.
 /assets/*

@@ -7,6 +7,9 @@ import { motion } from 'framer-motion';
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 const SITE_SHA = (import.meta.env.VITE_BUILD_SHA as string | undefined)?.slice(0, 7) ?? null;
 const REPO_URL = 'https://github.com/fr0ggy-p3ngu1n/portfolio-monorepo';
+// Asked from the browser: GitHub allows 60 unauthenticated calls an hour per
+// visitor, whereas Cloudflare's shared egress IPs are always over the limit
+const RUNS_URL = 'https://api.github.com/repos/fr0ggy-p3ngu1n/portfolio-monorepo/actions/runs?branch=main&per_page=20';
 
 // Cloudflare data centres are named by airport code
 const COLOS: Record<string, string> = {
@@ -24,8 +27,17 @@ type Status = {
   workerMs: number;
   projects: number | null;
   api: { sha: string | null; deployedAt: string | null };
-  ci: { name: string; status: string; conclusion: string | null; sha: string; at: string; url: string }[];
 };
+
+type Run = { name: string; status: string; conclusion: string | null; updated_at: string; html_url: string };
+
+async function latestRuns(): Promise<Run[]> {
+  const res = await fetch(RUNS_URL, { headers: { Accept: 'application/vnd.github+json' } });
+  if (!res.ok) throw new Error(String(res.status));
+  const { workflow_runs = [] } = (await res.json()) as { workflow_runs?: Run[] };
+  const seen = new Set<string>();
+  return workflow_runs.filter((r) => !seen.has(r.name) && seen.add(r.name));
+}
 
 function ago(iso: string | null) {
   if (!iso) return '';
@@ -54,6 +66,12 @@ export default function LiveStatus() {
   const [failed, setFailed] = useState(false);
   const [pings, setPings] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
+  const [runs, setRuns] = useState<Run[] | null>(null);
+  const [runsFailed, setRunsFailed] = useState(false);
+
+  useEffect(() => {
+    latestRuns().then(setRuns).catch(() => setRunsFailed(true));
+  }, []);
 
   const measure = useCallback(async () => {
     setBusy(true);
@@ -145,14 +163,19 @@ export default function LiveStatus() {
                   </>
                 }
               />
-              <Tile label="CI / CD" className="col-span-2 lg:col-span-1" value={status ? (status.ci.length ? `${status.ci.filter((r) => r.conclusion === 'success').length}/${status.ci.length} green` : '—') : <Skeleton />}>
-                {status && status.ci.length > 0 && (
+              <Tile
+                label="CI / CD"
+                className="col-span-2 lg:col-span-1"
+                value={runs ? (runs.length ? `${runs.filter((r) => r.conclusion === 'success').length}/${runs.length} green` : '—') : runsFailed ? '—' : <Skeleton />}
+                detail={runsFailed ? "GitHub didn't answer just now" : undefined}
+              >
+                {runs && runs.length > 0 && (
                   <ul className="mt-1 space-y-0.5">
-                    {status.ci.map((r) => (
+                    {runs.map((r) => (
                       <li key={r.name} className="text-xs text-tx-secondary flex items-center gap-1.5 min-w-0">
                         <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${r.status !== 'completed' ? 'bg-amber-400' : r.conclusion === 'success' ? 'bg-emerald-400' : 'bg-rose-500'}`} aria-hidden="true" />
-                        <a className="truncate hover:text-tx-accent" href={r.url} target="_blank" rel="noopener noreferrer">
-                          {r.name} · {r.status !== 'completed' ? 'running' : r.conclusion} · {ago(r.at)}
+                        <a className="truncate hover:text-tx-accent" href={r.html_url} target="_blank" rel="noopener noreferrer">
+                          {r.name} · {r.status !== 'completed' ? 'running' : r.conclusion} · {ago(r.updated_at)}
                         </a>
                       </li>
                     ))}
