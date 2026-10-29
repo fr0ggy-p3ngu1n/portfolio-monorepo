@@ -1,13 +1,8 @@
+import './zodConfig'; // must stay first: see the file
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { z } from 'zod';
-
-// Zod 4 probes `new Function` to decide whether it can compile faster
-// validators; the CSP blocks eval, so the probe only produced a console
-// error. Skip it.
-z.config({ jitless: true });
 
 // Speech diagnostic for the read-aloud bug (/?speech-test). Loaded only when
 // asked for, so it isn't in the normal bundle.

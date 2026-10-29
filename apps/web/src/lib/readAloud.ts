@@ -84,16 +84,47 @@ function mark(range: Range | null) {
 
 export const canReadAloud = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
 
+// Firefox on macOS never finishes a cancel() that interrupts speech: the
+// engine stays "speaking" and every later utterance waits forever, until a
+// reload. (Diagnosed with ?debug-speech and /?speech-test; no pause/resume/
+// cancel combination recovers it.) So text is read one sentence at a time,
+// and in Firefox Stop never interrupts: it stops queueing sentences and lets
+// the one playing finish, which keeps the engine healthy. Other browsers
+// cancel immediately.
+const GENTLE_STOP = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
+
+type Chunk = { start: number; text: string };
+
+/** Sentences (split again at commas or spaces if over ~200 characters). */
+function sentences(text: string): Chunk[] {
+  const out: Chunk[] = [];
+  const re = /[^.!?\n]+(?:[.!?]+["')\]]*|\n|$)/g;
+  for (const m of text.matchAll(re)) {
+    let start = m.index ?? 0;
+    let piece = m[0];
+    while (piece.length > 220) {
+      const cut = Math.max(piece.lastIndexOf(', ', 200), piece.lastIndexOf(' ', 200));
+      const at = cut > 40 ? cut + 1 : 200;
+      out.push({ start, text: piece.slice(0, at) });
+      start += at;
+      piece = piece.slice(at);
+    }
+    if (piece.trim()) out.push({ start, text: piece });
+  }
+  return out;
+}
+
 /** Read `root` aloud. Returns a stop function; `onEnd` runs when it finishes or stops. */
 export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   const { text, pieces } = collect(root);
   const synth = window.speechSynthesis;
+  const chunks = sentences(text);
   const timers: ReturnType<typeof setTimeout>[] = [];
   let sweep: ReturnType<typeof setInterval> | null = null;
   let done = false;
   let started = false;     // the engine reported speech actually starting
   let boundaries = false;  // ...and word positions
-  let attempts = 0;
+  let index = 0;
 
   const finish = (why = 'finish') => {
     if (done) return;
@@ -101,18 +132,17 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
     done = true;
     timers.forEach(clearTimeout);
     if (sweep) clearInterval(sweep);
-    current = null;
     mark(null);
     onEnd();
   };
+
   if (DEBUG) {
     const voices = synth.getVoices();
-    debugSpeech(`readAloud: ${text.length} chars, ${starts_count(text)} words, ${voices.length} voices`, voices.find((v) => v.default)?.name ?? '(no default voice)');
+    debugSpeech(`readAloud: ${text.length} chars, ${chunks.length} sentences, ${voices.length} voices`, voices.find((v) => v.default)?.name ?? '(no default voice)', GENTLE_STOP ? '(gentle stop)' : '');
   }
-  if (!text.trim()) { finish('no text'); return () => finish('stop'); }
+  if (!chunks.length) { finish('no text'); return () => finish('stop'); }
 
-  // Timed highlight for voices without word events, or no audible speech at
-  // all: steps through the words, then ends the session
+  // Timed highlight for voices without word events (or no audible speech)
   const starts: number[] = [];
   for (const m of text.matchAll(/\S+/g)) starts.push(m.index ?? 0);
   const startSweep = () => {
@@ -126,48 +156,46 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
     }, 330);
   };
 
-  const speak = () => {
-    attempts++;
-    const attempt = attempts;
-    const utterance = new SpeechSynthesisUtterance(text);
+  const speakNext = () => {
+    if (done) return;
+    if (index >= chunks.length) { finish('all sentences read'); return; }
+    const n = index++;
+    const chunk = chunks[n];
+    const utterance = new SpeechSynthesisUtterance(chunk.text);
     utterance.rate = 0.95;
-    let wordEvents = 0;
-    utterance.onstart = () => { started = true; debugSpeech(`attempt ${attempt}: start`); };
+    let words = 0;
+    utterance.onstart = () => { started = true; if (n < 2) debugSpeech(`sentence ${n + 1}/${chunks.length}: start`); };
     utterance.onboundary = (e) => {
-      if (++wordEvents <= 3) debugSpeech(`attempt ${attempt}: boundary #${wordEvents}`, e.name, 'charIndex', e.charIndex);
       if (e.name && e.name !== 'word') return;
+      if (++words === 1 && n < 2) debugSpeech(`sentence ${n + 1}: word events`);
       boundaries = true;
-      mark(wordRange(pieces, e.charIndex));
+      if (!done) mark(wordRange(pieces, chunk.start + e.charIndex));
     };
-    // Safari and Firefox sometimes end or reject the first utterance after a
-    // cancel() before it ever starts: try once more with a fresh one. Ends
-    // after a real start are the normal finish.
-    const settle = (e: Event) => {
-      debugSpeech(`attempt ${attempt}: ${e.type}`, (e as SpeechSynthesisErrorEvent).error ?? '', `started=${started} words=${wordEvents}`, current === utterance ? '' : '(stale utterance, ignored)');
-      if (done || current !== utterance) return;
-      if (started) { finish('speech ended'); return; }
-      if (attempts < 2) {
-        debugSpeech(`attempt ${attempt} never started: retrying in 250 ms`);
-        timers.push(setTimeout(() => { if (!done) { debugSpeech('cancel before retry'); synth.cancel(); speak(); } }, 250));
-      } else startSweep();
+    const next = (e: Event) => {
+      if (n < 2 || e.type === 'error') debugSpeech(`sentence ${n + 1}: ${e.type}`, (e as SpeechSynthesisErrorEvent).error ?? '');
+      if (current === utterance) current = null;
+      speakNext();
     };
-    utterance.onend = settle;
-    utterance.onerror = settle;
+    utterance.onend = next;
+    utterance.onerror = next;
     current = utterance;
-    debugSpeech(`attempt ${attempt}: resume + speak`);
-    synth.resume();       // Chrome can be left paused after a cancel
+    if (!GENTLE_STOP) synth.resume();   // Chrome can be left paused after a cancel
     synth.speak(utterance);
-    if (DEBUG) for (let ms = 500; ms <= 5000; ms += 500) timers.push(setTimeout(() => debugSpeech(`attempt ${attempt}: state @${ms}ms after speak, started=${started}`), ms));
   };
 
-  // Clear anything still queued, wait a beat (speak() straight after cancel()
-  // is dropped by Chrome and Safari), then speak
-  debugSpeech('cancel before first speak');
-  synth.cancel();
-  timers.push(setTimeout(() => { if (!done) speak(); }, 150));
-  timers.push(setTimeout(startSweep, 1000));
+  // Elsewhere, clear anything still queued first and wait a beat: speak()
+  // straight after cancel() is dropped by Chrome and Safari. In Firefox a
+  // sentence may still be finishing from a gentle stop; new ones queue after it.
+  if (!GENTLE_STOP) { debugSpeech('cancel before first sentence'); synth.cancel(); }
+  timers.push(setTimeout(speakNext, GENTLE_STOP ? 0 : 150));
+  timers.push(setTimeout(startSweep, 1500));
+  if (DEBUG) for (let ms = 1000; ms <= 5000; ms += 1000) timers.push(setTimeout(() => debugSpeech(`state @${ms}ms, started=${started}`), ms));
 
-  return () => { finish('stopped by user'); debugSpeech('cancel (stop)'); synth.cancel(); };
+  return () => {
+    finish('stopped by user');
+    if (GENTLE_STOP) debugSpeech('gentle stop: letting the current sentence finish');
+    else { debugSpeech('cancel (stop)'); synth.cancel(); }
+  };
 }
 
 function starts_count(text: string) {
