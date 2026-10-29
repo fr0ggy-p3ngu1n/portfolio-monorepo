@@ -25,6 +25,6 @@ The portfolio is a single page at https://matthewsullivan.dev/, plus a brand gui
 
 ## Brand
 - Logo: the "MS signal mark", a waveform M that turns into a circuit-trace S with a solder pad at each end, inside a pink-to-violet ring. The M is a signal (music, oscilloscopes), the S a PCB trace (embedded roots).
-- Colours: ink #0E0B18 background, pink #EC4899, violet #A78BFA; deep pink #BE185D and deep violet #7C3AED for text on white.
+- Colors: ink #0E0B18 background, pink #EC4899, violet #A78BFA; deep pink #BE185D and deep violet #7C3AED for text on white.
 - Type: Inter and JetBrains Mono.
 - Guide and downloads: https://matthewsullivan.dev/brand/

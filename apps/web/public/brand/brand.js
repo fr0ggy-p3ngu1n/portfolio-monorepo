@@ -1,4 +1,4 @@
-// Click a colour swatch to copy its hex value. Lives in its own file because
+// Click a color swatch to copy its hex value. Lives in its own file because
 // the site's CSP doesn't allow inline scripts.
 const status = document.getElementById('copy-status');
 document.querySelectorAll('.swatch').forEach((btn) => {
