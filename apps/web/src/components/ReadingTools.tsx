@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useReadingTools } from '../context/ReadingToolsContext';
-import { canReadAloud, readAloud, sectionInView } from '../lib/readAloud';
+import { canReadAloud, debugSpeech, readAloud, sectionInView } from '../lib/readAloud';
 
 // The reading-tools panel (opened from the header, the mobile menu or ⌘K)
 // and the reading ruler overlay. Read aloud can be started from anywhere with:
@@ -60,10 +60,12 @@ export default function ReadingTools() {
   useEffect(() => {
     const onAction = (e: Event) => {
       const action = (e as CustomEvent<'read' | 'stop'>).detail;
+      debugSpeech(`action: ${action}`, stopRef.current ? '(stopping the current read first)' : '', `canReadAloud=${canReadAloud()}`);
       stopRef.current?.();
       stopRef.current = null;
       if (action === 'read' && canReadAloud()) {
         const section = sectionInView();
+        debugSpeech('section in view:', section?.id || section?.querySelector('h2')?.textContent || '(none)');
         if (!section) return;
         setReading(true);
         stopRef.current = readAloud(section, () => { setReading(false); stopRef.current = null; });

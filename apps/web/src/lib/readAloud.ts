@@ -12,6 +12,17 @@ type Piece = { node: Text; start: number };
 // fire), so the one being spoken is kept here
 let current: SpeechSynthesisUtterance | null = null;
 
+// Diagnostics: add ?debug-speech to the URL to log every speech step to the
+// console (for tracking down browser-specific speech bugs)
+const DEBUG = typeof location !== 'undefined' && new URLSearchParams(location.search).has('debug-speech');
+const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
+export function debugSpeech(...args: unknown[]) {
+  if (!DEBUG) return;
+  const s = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null;
+  const state = s ? `[speaking=${s.speaking} pending=${s.pending} paused=${s.paused}]` : '';
+  console.log(`[speech] +${Math.round(performance.now() - t0)}ms`, ...args, state);
+}
+
 export function sectionInView(): HTMLElement | null {
   let best: HTMLElement | null = null;
   let bestArea = 0;
@@ -84,8 +95,9 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   let boundaries = false;  // ...and word positions
   let attempts = 0;
 
-  const finish = () => {
+  const finish = (why = 'finish') => {
     if (done) return;
+    debugSpeech('finish:', why);
     done = true;
     timers.forEach(clearTimeout);
     if (sweep) clearInterval(sweep);
@@ -93,7 +105,11 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
     mark(null);
     onEnd();
   };
-  if (!text.trim()) { finish(); return finish; }
+  if (DEBUG) {
+    const voices = synth.getVoices();
+    debugSpeech(`readAloud: ${text.length} chars, ${starts_count(text)} words, ${voices.length} voices`, voices.find((v) => v.default)?.name ?? '(no default voice)');
+  }
+  if (!text.trim()) { finish('no text'); return () => finish('stop'); }
 
   // Timed highlight for voices without word events, or no audible speech at
   // all: steps through the words, then ends the session
@@ -101,20 +117,24 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   for (const m of text.matchAll(/\S+/g)) starts.push(m.index ?? 0);
   const startSweep = () => {
     if (sweep || boundaries || done) return;
+    debugSpeech('timed highlight sweep starts', started ? '(speech started, no word events)' : '(speech has not started)');
     let i = 0;
     sweep = setInterval(() => {
       if (boundaries) { if (sweep) clearInterval(sweep); sweep = null; return; }
-      if (i >= starts.length) { if (!started) finish(); return; }
+      if (i >= starts.length) { if (!started) finish('sweep done, speech never started'); return; }
       mark(wordRange(pieces, starts[i++]));
     }, 330);
   };
 
   const speak = () => {
     attempts++;
+    const attempt = attempts;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.95;
-    utterance.onstart = () => { started = true; };
+    let wordEvents = 0;
+    utterance.onstart = () => { started = true; debugSpeech(`attempt ${attempt}: start`); };
     utterance.onboundary = (e) => {
+      if (++wordEvents <= 3) debugSpeech(`attempt ${attempt}: boundary #${wordEvents}`, e.name, 'charIndex', e.charIndex);
       if (e.name && e.name !== 'word') return;
       boundaries = true;
       mark(wordRange(pieces, e.charIndex));
@@ -122,24 +142,34 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
     // Safari and Firefox sometimes end or reject the first utterance after a
     // cancel() before it ever starts: try once more with a fresh one. Ends
     // after a real start are the normal finish.
-    const settle = () => {
+    const settle = (e: Event) => {
+      debugSpeech(`attempt ${attempt}: ${e.type}`, (e as SpeechSynthesisErrorEvent).error ?? '', `started=${started} words=${wordEvents}`, current === utterance ? '' : '(stale utterance, ignored)');
       if (done || current !== utterance) return;
-      if (started) { finish(); return; }
-      if (attempts < 2) timers.push(setTimeout(() => { if (!done) { synth.cancel(); speak(); } }, 250));
-      else startSweep();
+      if (started) { finish('speech ended'); return; }
+      if (attempts < 2) {
+        debugSpeech(`attempt ${attempt} never started: retrying in 250 ms`);
+        timers.push(setTimeout(() => { if (!done) { debugSpeech('cancel before retry'); synth.cancel(); speak(); } }, 250));
+      } else startSweep();
     };
     utterance.onend = settle;
     utterance.onerror = settle;
     current = utterance;
+    debugSpeech(`attempt ${attempt}: resume + speak`);
     synth.resume();       // Chrome can be left paused after a cancel
     synth.speak(utterance);
+    if (DEBUG) for (let ms = 500; ms <= 5000; ms += 500) timers.push(setTimeout(() => debugSpeech(`attempt ${attempt}: state @${ms}ms after speak, started=${started}`), ms));
   };
 
   // Clear anything still queued, wait a beat (speak() straight after cancel()
   // is dropped by Chrome and Safari), then speak
+  debugSpeech('cancel before first speak');
   synth.cancel();
   timers.push(setTimeout(() => { if (!done) speak(); }, 150));
   timers.push(setTimeout(startSweep, 1000));
 
-  return () => { finish(); synth.cancel(); };
+  return () => { finish('stopped by user'); debugSpeech('cancel (stop)'); synth.cancel(); };
+}
+
+function starts_count(text: string) {
+  return (text.match(/\S+/g) ?? []).length;
 }
