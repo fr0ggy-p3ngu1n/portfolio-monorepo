@@ -77,59 +77,69 @@ export const canReadAloud = () => typeof window !== 'undefined' && 'speechSynthe
 export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   const { text, pieces } = collect(root);
   const synth = window.speechSynthesis;
-  let timer: ReturnType<typeof setInterval> | null = null;
-  let fallbackStart: ReturnType<typeof setTimeout> | null = null;
-  let startDelay: ReturnType<typeof setTimeout> | null = null;
+  const timers: ReturnType<typeof setTimeout>[] = [];
+  let sweep: ReturnType<typeof setInterval> | null = null;
   let done = false;
+  let started = false;     // the engine reported speech actually starting
+  let boundaries = false;  // ...and word positions
+  let attempts = 0;
 
   const finish = () => {
     if (done) return;
     done = true;
-    if (timer) clearInterval(timer);
-    if (fallbackStart) clearTimeout(fallbackStart);
-    if (startDelay) clearTimeout(startDelay);
-    if (current === utterance) current = null;
+    timers.forEach(clearTimeout);
+    if (sweep) clearInterval(sweep);
+    current = null;
     mark(null);
     onEnd();
   };
-
-  const utterance = new SpeechSynthesisUtterance(text);
   if (!text.trim()) { finish(); return finish; }
 
-  utterance.rate = 0.95;
-  let boundaries = false;
-
-  // Timed sweep for voices that never report word boundaries
+  // Timed highlight for voices without word events, or no audible speech at
+  // all: steps through the words, then ends the session
   const starts: number[] = [];
   for (const m of text.matchAll(/\S+/g)) starts.push(m.index ?? 0);
-  fallbackStart = setTimeout(() => {
-    if (boundaries || done) return;
+  const startSweep = () => {
+    if (sweep || boundaries || done) return;
     let i = 0;
-    timer = setInterval(() => {
-      if (i >= starts.length) { if (timer) clearInterval(timer); return; }
+    sweep = setInterval(() => {
+      if (boundaries) { if (sweep) clearInterval(sweep); sweep = null; return; }
+      if (i >= starts.length) { if (!started) finish(); return; }
       mark(wordRange(pieces, starts[i++]));
     }, 330);
-  }, 800);
-
-  utterance.onboundary = (e) => {
-    if (e.name && e.name !== 'word') return;
-    boundaries = true;
-    if (timer) { clearInterval(timer); timer = null; }
-    mark(wordRange(pieces, e.charIndex));
   };
-  utterance.onend = finish;
-  utterance.onerror = finish;
 
-  // Chrome and Safari drop a speak() that comes straight after cancel(), and
-  // Chrome can be left paused after a cancel, so clear, wait a beat, resume,
-  // then speak. (This is what broke reading a second time after Stop.)
-  synth.cancel();
-  current = utterance;
-  startDelay = setTimeout(() => {
-    if (done) return;
-    synth.resume();
+  const speak = () => {
+    attempts++;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.onstart = () => { started = true; };
+    utterance.onboundary = (e) => {
+      if (e.name && e.name !== 'word') return;
+      boundaries = true;
+      mark(wordRange(pieces, e.charIndex));
+    };
+    // Safari and Firefox sometimes end or reject the first utterance after a
+    // cancel() before it ever starts: try once more with a fresh one. Ends
+    // after a real start are the normal finish.
+    const settle = () => {
+      if (done || current !== utterance) return;
+      if (started) { finish(); return; }
+      if (attempts < 2) timers.push(setTimeout(() => { if (!done) { synth.cancel(); speak(); } }, 250));
+      else startSweep();
+    };
+    utterance.onend = settle;
+    utterance.onerror = settle;
+    current = utterance;
+    synth.resume();       // Chrome can be left paused after a cancel
     synth.speak(utterance);
-  }, 150);
+  };
 
-  return () => { synth.cancel(); finish(); };
+  // Clear anything still queued, wait a beat (speak() straight after cancel()
+  // is dropped by Chrome and Safari), then speak
+  synth.cancel();
+  timers.push(setTimeout(() => { if (!done) speak(); }, 150));
+  timers.push(setTimeout(startSweep, 1000));
+
+  return () => { finish(); synth.cancel(); };
 }
