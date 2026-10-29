@@ -86,7 +86,7 @@ export const canReadAloud = () => typeof window !== 'undefined' && 'speechSynthe
 
 // Firefox on macOS never finishes a cancel() that interrupts speech: the
 // engine stays "speaking" and every later utterance waits forever, until a
-// reload. (Diagnosed with ?debug-speech and /?speech-test; no pause/resume/
+// reload. (Diagnosed with ?debug-speech and a since-removed stop-strategy test; no pause/resume/
 // cancel combination recovers it.) So text is read one sentence at a time,
 // and in Firefox Stop never interrupts: it stops queueing sentences and lets
 // the one playing finish, which keeps the engine healthy. Other browsers

@@ -4,12 +4,6 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 
-// Speech diagnostic for the read-aloud bug (/?speech-test). Loaded only when
-// asked for, so it isn't in the normal bundle.
-if (new URLSearchParams(location.search).has('speech-test') && 'speechSynthesis' in window) {
-  void import('./lib/speechTest').then((m) => m.runSpeechTest());
-}
-
 // Easter Egg E — for the curious developer 🧙
 console.log(
   '%c🧙 One does not simply inspect the source code…',
