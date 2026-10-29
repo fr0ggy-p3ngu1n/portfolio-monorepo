@@ -8,6 +8,7 @@ import Education from '../components/sections/Education';
 import Projects from '../components/sections/Projects';
 import Skills from '../components/sections/Skills';
 import LiveStatus from '../components/sections/LiveStatus';
+import Playground from '../components/sections/Playground';
 import Contact from '../components/sections/Contact';
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
         <Skills />
         <Experience />
         <Projects />
+        <Playground />
         <Education />
         <AboutMe />
         <Contact />

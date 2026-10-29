@@ -21,6 +21,7 @@ export type Bindings = {
   CONTACT_LIMIT: RateLimit;
   LEADERBOARD_LIMIT: RateLimit;
   STATUS_LIMIT: RateLimit;
+  OG_LIMIT: RateLimit;
   // Set by the deploy workflow (wrangler deploy --var)
   GIT_SHA?: string;
   DEPLOYED_AT?: string;

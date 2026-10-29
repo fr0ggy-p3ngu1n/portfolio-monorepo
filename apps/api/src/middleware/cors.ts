@@ -15,4 +15,6 @@ export const cors = honoCors({
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
+  // Playground card maker shows whether a card came from the edge cache
+  exposeHeaders: ['X-Cache'],
 });

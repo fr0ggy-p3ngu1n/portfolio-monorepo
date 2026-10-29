@@ -174,6 +174,97 @@ function buildOG(): object {
   );
 }
 
+// ── Playground card (/api/og/card) ──────────────────────────────────────────────
+// The homepage playground's live card maker: a visitor's own title/subtitle,
+// rendered the same way as the site's link-preview image. Labelled as a
+// playground card so it can't pass for an official one.
+
+const CONTROL = /[\u0000-\u001f\u007f-\u009f]/g;
+const clean = (v: string | undefined, max: number) =>
+  (v ?? '').replace(CONTROL, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+
+function buildCard(title: string, subtitle: string, light: boolean): object {
+  const BG = light ? '#f7f5fb' : '#0e0b18';
+  const TEXT = light ? '#0e0b18' : '#f7f5fb';
+  const SUB = light ? '#5b5470' : '#c9c2da';
+  const ACCENT = light ? '#be185d' : '#ec4899';
+  const size = title.length <= 24 ? 76 : title.length <= 44 ? 62 : 50;
+
+  return div(
+    {
+      width: '1200px', height: '630px', position: 'relative', fontFamily: 'Inter',
+      backgroundColor: BG,
+      backgroundImage: `radial-gradient(circle, ${light ? 'rgba(124,58,237,0.16)' : 'rgba(236,72,153,0.18)'} 1.5px, transparent 1.5px)`,
+      backgroundSize: '28px 28px',
+    },
+    div(
+      { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'column', justifyContent: 'center', padding: '80px 90px' },
+      div(
+        { alignSelf: 'flex-start', padding: '8px 18px', borderRadius: '999px', border: `1px solid ${ACCENT}55`, backgroundColor: `${ACCENT}12`, marginBottom: '34px' },
+        span({ fontSize: '20px', color: ACCENT }, 'Made live in the playground'),
+      ),
+      span({ fontSize: `${size}px`, fontWeight: 700, color: TEXT, lineHeight: 1.08, letterSpacing: '-1px', marginBottom: subtitle ? '22px' : '0' }, title),
+      subtitle ? span({ fontSize: '30px', color: SUB, lineHeight: 1.35 }, subtitle) : null,
+    ),
+    div({ position: 'absolute', left: '90px', bottom: '56px', width: '56px', height: '5px', borderRadius: '3px', backgroundImage: 'linear-gradient(90deg, #ec4899, #a78bfa)' }),
+    div(
+      { position: 'absolute', bottom: '44px', right: '90px' },
+      span({ fontSize: '22px', color: light ? '#7c3aed' : '#a78bfa', letterSpacing: '0.5px' }, 'matthewsullivan.dev'),
+    ),
+  );
+}
+
+app.get('/card', async (c) => {
+  const title = clean(c.req.query('title'), 70) || 'Hello from the edge';
+  const subtitle = clean(c.req.query('subtitle'), 100);
+  const light = c.req.query('theme') === 'light';
+
+  // Same inputs → same URL → served from the edge cache, no render and no
+  // rate-limit hit
+  const url = new URL(c.req.url);
+  url.search = new URLSearchParams({ title, subtitle, theme: light ? 'light' : 'dark' }).toString();
+  const key = new Request(url.toString());
+  const cache = caches.default;
+  const hit = await cache.match(key);
+  if (hit) {
+    const res = new Response(hit.body, hit);
+    res.headers.set('X-Cache', 'HIT');
+    return res;
+  }
+
+  const ip = c.req.header('CF-Connecting-IP') ?? 'unknown';
+  const { success } = await c.env.OG_LIMIT.limit({ key: ip });
+  if (!success) return c.json({ error: 'Too many new cards. Try again in a minute.' }, 429);
+
+  try {
+    await ensureInit();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const svg = await satori(buildCard(title, subtitle, light) as any, {
+      width: 1200,
+      height: 630,
+      fonts: [
+        { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
+        { name: 'Inter', data: fontRegular, weight: 400, style: 'normal' },
+      ],
+    });
+    const png = (await Resvg.async(svg, { fitTo: { mode: 'width', value: 1200 } })).render().asPng();
+    const res = new Response(png, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=86400',
+        // Visitor-written text: keep these out of search results
+        'X-Robots-Tag': 'noindex',
+        'X-Cache': 'MISS',
+      },
+    });
+    c.executionCtx.waitUntil(cache.put(key, res.clone()));
+    return res;
+  } catch (err) {
+    console.error('[og/card] generation failed:', err);
+    return c.json({ error: 'Could not render that card' }, 500);
+  }
+});
+
 // ── Route ──────────────────────────────────────────────────────────────────────
 app.get('/', async (c) => {
   try {
