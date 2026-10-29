@@ -168,8 +168,19 @@ const ProjectCard = memo(function ProjectCard({ project, index, onSelect, onWiza
             ))}
           </div>
         )}
-        <div className="flex items-center gap-4 mt-auto">
-          {project.url && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto">
+          {project.demoUrl && (
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="glass-accent px-3 py-1.5 rounded-lg text-sm font-semibold text-pink-200 hover:text-pink-100 transition-colors"
+            >
+              {project.demoLabel || 'Try it live'} ↗
+            </a>
+          )}
+          {project.url && project.url !== project.demoUrl && (
             <a
               href={project.url}
               target="_blank"
@@ -375,13 +386,23 @@ export default function Projects() {
 
                 {selected.title === 'Personal Portfolio' && <TechNote />}
 
-                <div className="flex gap-3 pt-4 border-t border-white/10 mt-5">
-                  {selected.url && (
+                <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10 mt-5">
+                  {selected.demoUrl && (
+                    <a
+                      href={selected.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="glass-accent px-4 py-2 text-pink-200 text-sm font-semibold rounded-xl hover:text-pink-100 transition-colors"
+                    >
+                      {selected.demoLabel || 'Try it live'} ↗
+                    </a>
+                  )}
+                  {selected.url && selected.url !== selected.demoUrl && (
                     <a
                       href={selected.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="glass-accent px-4 py-2 text-pink-200 text-sm font-semibold rounded-xl hover:text-pink-100 transition-colors"
+                      className={`${selected.demoUrl ? 'glass text-tx-secondary font-medium hover:text-white' : 'glass-accent text-pink-200 font-semibold hover:text-pink-100'} px-4 py-2 text-sm rounded-xl transition-colors`}
                     >
                       Live site ↗
                     </a>

@@ -7,6 +7,8 @@ export const ProjectSchema = z.object({
   url: z.string().url().optional().nullable(),
   repoUrl: z.string().url().optional().nullable(),
   imageUrl: z.string().url().optional().nullable(),
+  demoUrl: z.string().url().optional().nullable(),
+  demoLabel: z.string().max(40).optional().nullable(),
   tags: z.array(z.string()),
   featured: z.boolean().default(false),
   published: z.boolean().default(true),

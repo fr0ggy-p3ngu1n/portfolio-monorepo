@@ -13,6 +13,8 @@ model Project {
   url         String?
   repoUrl     String?
   imageUrl    String?
+  demoUrl     String?  // "Try it live" deep link
+  demoLabel   String?  // its button text
   tags        String   // JSON-encoded string array (SQLite has no native array)
   featured    Boolean  @default(false)
   published   Boolean  @default(true)

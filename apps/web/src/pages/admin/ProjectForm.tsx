@@ -9,6 +9,8 @@ type FormState = {
   url: string;
   repoUrl: string;
   imageUrl: string;
+  demoUrl: string;
+  demoLabel: string;
   tags: string;
   featured: boolean;
   published: boolean;
@@ -21,6 +23,8 @@ const EMPTY: FormState = {
   url: '',
   repoUrl: '',
   imageUrl: '',
+  demoUrl: '',
+  demoLabel: '',
   tags: '',
   featured: false,
   published: true,
@@ -49,6 +53,8 @@ export default function ProjectForm() {
           url: p.url ?? '',
           repoUrl: p.repoUrl ?? '',
           imageUrl: p.imageUrl ?? '',
+          demoUrl: p.demoUrl ?? '',
+          demoLabel: p.demoLabel ?? '',
           tags: Array.isArray(p.tags) ? p.tags.join(', ') : '',
           featured: p.featured,
           published: p.published,
@@ -77,6 +83,8 @@ export default function ProjectForm() {
       url: form.url || null,
       repoUrl: form.repoUrl || null,
       imageUrl: form.imageUrl || null,
+      demoUrl: form.demoUrl || null,
+      demoLabel: form.demoLabel.trim() || null,
       tags: form.tags
         .split(',')
         .map((t) => t.trim())
@@ -164,6 +172,25 @@ export default function ProjectForm() {
             value={form.repoUrl}
             onChange={(e) => set('repoUrl', e.target.value)}
             placeholder="https://github.com/you/repo"
+            className={inputCls}
+          />
+        </Field>
+        <Field label="Demo URL (Try it live)">
+          <input
+            type="url"
+            value={form.demoUrl}
+            onChange={(e) => set('demoUrl', e.target.value)}
+            placeholder="https://example.com/#demo"
+            className={inputCls}
+          />
+        </Field>
+        <Field label="Demo button text">
+          <input
+            type="text"
+            maxLength={40}
+            value={form.demoLabel}
+            onChange={(e) => set('demoLabel', e.target.value)}
+            placeholder="Try it live"
             className={inputCls}
           />
         </Field>
