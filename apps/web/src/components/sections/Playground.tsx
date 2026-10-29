@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import CardMaker from '../playground/CardMaker';
+import ActivityGrid from '../playground/ActivityGrid';
 
 // Small live demos running on the same stack as the rest of the site
 export default function Playground() {
@@ -26,6 +27,7 @@ export default function Playground() {
         <p className="text-center text-tx-secondary mb-12">Small live demos, running on the same stack as this site.</p>
         <div className="grid gap-6">
           <CardMaker />
+          <ActivityGrid />
         </div>
       </div>
     </section>

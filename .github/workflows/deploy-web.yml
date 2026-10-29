@@ -9,6 +9,10 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/deploy-web.yml'
+  # Daily rebuild so the playground's GitHub activity grid stays current
+  schedule:
+    - cron: '17 9 * * *'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -27,6 +31,11 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # GitHub contribution calendar + latest commits for the playground
+      - run: node apps/web/scripts/activity.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: pnpm --filter web build
         env:
