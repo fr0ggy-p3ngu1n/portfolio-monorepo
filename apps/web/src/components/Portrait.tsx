@@ -108,6 +108,8 @@ export default function Portrait() {
         aria-label={goose ? 'Show Matthew again' : 'Who really writes the code? Show Goose'}
         className="portrait peer relative block size-44 lg:size-56 rounded-full cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pink-400"
       >
+        {/* Scales on hover (CSS); tilt owns the button's own transform */}
+        <span className="portrait-pop absolute inset-0 block">
         <span className="absolute inset-[11%] overflow-hidden rounded-full bg-bg-surface">
           <Photo {...PHOTOS.matthew} visible={!goose} />
           <Photo {...PHOTOS.goose} visible={goose} />
@@ -149,6 +151,7 @@ export default function Portrait() {
             ))}
           </g>
         </svg>
+        </span>
       </button>
 
       {/* Fixed height so the caption never shifts the layout. The hint only

@@ -85,6 +85,22 @@ button, a, [role="button"] {
   animation: portrait-orbit 14s linear infinite;
   filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.55)) drop-shadow(0 0 22px rgba(167, 139, 250, 0.3));
 }
+.portrait-pop {
+  transition: transform 0.35s cubic-bezier(0.21, 0.47, 0.32, 0.98);
+}
+/* Only real hover (mouse/trackpad): on touch screens :hover sticks after a tap */
+@media (hover: hover) {
+  .portrait:hover .portrait-pop {
+    transform: scale(1.06);
+  }
+}
+.portrait:focus-visible .portrait-pop {
+  transform: scale(1.06);
+}
+.portrait:active .portrait-pop {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
 @keyframes portrait-orbit {
   to { transform: rotate(360deg); }
 }
