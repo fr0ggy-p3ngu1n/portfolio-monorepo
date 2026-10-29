@@ -1,6 +1,7 @@
 // Builds public/activity.json for the homepage playground's GitHub activity
 // grid: the contribution calendar (same data as the green grid on the GitHub
-// profile) plus the latest commits across the public repos.
+// profile) plus the latest commits across every public repo committed to in
+// the last year (private repos are left out entirely, names included).
 //
 // Runs in the deploy workflow (daily on a schedule too) with the workflow's
 // own GITHUB_TOKEN. Locally: GITHUB_TOKEN=$(gh auth token) node scripts/activity.mjs
@@ -10,13 +11,6 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const OUT = new URL('../public/activity.json', import.meta.url);
 const LOGIN = 'fr0ggy-p3ngu1n';
-const REPOS = [
-  'fr0ggy-p3ngu1n/portfolio-monorepo',
-  'sproutaac/app',
-  'sproutaac/website',
-  'clearpath-ext/clearpath-extension',
-  'clearpath-ext/clearpath-web',
-];
 const token = process.env.GITHUB_TOKEN;
 
 async function gh(path, init = {}) {
@@ -34,16 +28,22 @@ async function main() {
   const { data, errors } = await gh('/graphql', {
     method: 'POST',
     body: JSON.stringify({
-      query: `query($login: String!) { user(login: $login) { contributionsCollection { contributionCalendar {
-        totalContributions weeks { contributionDays { date contributionCount } } } } } }`,
+      query: `query($login: String!) { user(login: $login) { contributionsCollection {
+        contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } }
+        commitContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate } }
+      } } }`,
       variables: { login: LOGIN },
     }),
   });
   if (errors) throw new Error(JSON.stringify(errors));
   const calendar = data.user.contributionsCollection.contributionCalendar;
+  const repos = data.user.contributionsCollection.commitContributionsByRepository
+    .map((c) => c.repository)
+    .filter((r) => !r.isPrivate)
+    .map((r) => r.nameWithOwner);
 
   const perRepo = await Promise.all(
-    REPOS.map((repo) =>
+    repos.map((repo) =>
       gh(`/repos/${repo}/commits?author=${LOGIN}&per_page=6`)
         .then((commits) => commits.map((c) => ({
           repo,
@@ -55,7 +55,17 @@ async function main() {
         .catch(() => []),
     ),
   );
-  const recent = perRepo.flat().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+  // Newest first, at most two per repo, so one busy repo doesn't fill the list
+  const perRepoCount = new Map();
+  const recent = perRepo
+    .flat()
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .filter((c) => {
+      const n = perRepoCount.get(c.repo) ?? 0;
+      perRepoCount.set(c.repo, n + 1);
+      return n < 2;
+    })
+    .slice(0, 6);
 
   const out = {
     generatedAt: new Date().toISOString(),
@@ -65,7 +75,7 @@ async function main() {
     recent,
   };
   writeFileSync(OUT, JSON.stringify(out));
-  console.log(`activity.json: ${out.total} contributions, ${out.weeks.length} weeks, ${recent.length} recent commits`);
+  console.log(`activity.json: ${out.total} contributions, ${out.weeks.length} weeks, ${recent.length} recent commits from ${repos.length} public repos (${repos.join(', ')})`);
 }
 
 main().catch((err) => {

@@ -77,7 +77,7 @@ portfolio/
 - **Playground** — three live demos after Projects:
   - *Link-preview card maker*: type a title and the Worker renders a 1200×630 card with satori + resvg, showing the round trip and edge-cache hit/miss
   - *Firmware in your browser*: a 32×8 LED matrix driven by C written like microcontroller code (no libc, no malloc, fixed timestep), compiled to a 2.7 KB WebAssembly module; four patterns, click LEDs to draw Game of Life cells
-  - *Shipping activity*: the GitHub contribution calendar and latest commits, rebuilt daily by the deploy workflow
+  - *Shipping activity*: the GitHub contribution calendar and the latest commits across every public repo committed to in the last year (at most two per repo; private repos left out), rebuilt daily by the deploy workflow
 - **Try it live** — project cards can link straight to a project's interactive demo (`demoUrl` / `demoLabel`, editable in the admin)
 - **Reading tools** — from ClearPath: a reading ruler, a dyslexia-friendly font (self-hosted OpenDyslexic, content only), and read-aloud of the section in view with word highlighting via the CSS Custom Highlight API; settings persist (header book icon, mobile menu, ⌘K; `components/ReadingTools.tsx`, `lib/readAloud.ts`)
 - **Goose** — hover or tap the Cat Dad card for photos of my cat

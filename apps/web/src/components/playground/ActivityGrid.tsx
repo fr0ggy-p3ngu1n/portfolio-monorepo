@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-// GitHub contribution calendar + latest public commits. The data is fetched
+// GitHub contribution calendar + latest commits across all public repos
+// (org repos shown as org/repo, personal ones by name). The data is fetched
 // by the deploy workflow (scripts/activity.mjs) and served as /activity.json,
 // refreshed daily, so visitors never hit GitHub's rate limits.
 
@@ -104,7 +105,7 @@ export default function ActivityGrid() {
               <li key={c.repo + c.sha} className="py-2 flex items-baseline gap-3 min-w-0 text-sm">
                 <a href={c.url} target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-tx-accent shrink-0 hover:underline">{c.sha}</a>
                 <span className="text-tx-primary truncate min-w-0 flex-1">{c.message}</span>
-                <span className="text-xs text-tx-muted shrink-0 hidden sm:inline">{c.repo.split('/')[1]}</span>
+                <span className="text-xs text-tx-muted shrink-0 hidden sm:inline">{c.repo.replace(/^fr0ggy-p3ngu1n\//, '')}</span>
                 <span className="text-xs text-tx-muted shrink-0">{ago(c.date)}</span>
               </li>
             ))}
