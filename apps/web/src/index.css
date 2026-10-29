@@ -78,15 +78,11 @@ button, a, [role="button"] {
   touch-action: manipulation;
 }
 
-/* Hero portrait: the brand ring slowly orbits, and glows while hovered */
+/* Hero portrait: the brand ring slowly orbits and always glows */
 .portrait-ring {
   transform-box: view-box;
   transform-origin: 256px 256px;
   animation: portrait-orbit 14s linear infinite;
-  transition: filter 0.4s ease;
-}
-.portrait:hover .portrait-ring,
-.portrait:focus-visible .portrait-ring {
   filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.55)) drop-shadow(0 0 22px rgba(167, 139, 250, 0.3));
 }
 @keyframes portrait-orbit {
