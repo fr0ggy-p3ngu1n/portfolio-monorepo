@@ -16,13 +16,18 @@ function LinkedInCard() {
     >
       {/* Avatar + identity */}
       <div className="flex items-center gap-4">
-        <img
-          src="/avatar.jpg"
-          alt="Matthew Sullivan"
-          loading="lazy"
-          decoding="async"
-          className="w-14 h-14 rounded-full object-cover object-top shrink-0 border-2 border-pink-500/30"
-        />
+        <picture className="shrink-0">
+          <source type="image/avif" srcSet="/portrait/matthew-320.avif" />
+          <img
+            src="/portrait/matthew-320.webp"
+            alt="Matthew Sullivan"
+            width={320}
+            height={320}
+            loading="lazy"
+            decoding="async"
+            className="w-14 h-14 rounded-full object-cover border-2 border-pink-500/30"
+          />
+        </picture>
         <div>
           <p className="font-bold text-tx-primary">Matthew Sullivan</p>
           <p className="text-tx-secondary text-sm leading-snug">Full-Stack Developer at EHMA.ai</p>
