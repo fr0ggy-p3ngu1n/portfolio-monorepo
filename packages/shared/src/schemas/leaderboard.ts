@@ -10,6 +10,8 @@ export const LeaderboardEntrySchema = z.object({
 export const SubmitScoreSchema = z.object({
   name:  z.string().regex(/^[A-Z0-9]{3}$/, 'Name must be 3 uppercase alphanumeric characters'),
   score: z.number().int().min(1).max(99999),
+  // Signed start-of-run ticket from GET /api/leaderboard/start
+  ticket: z.string().max(200),
 });
 
 export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;

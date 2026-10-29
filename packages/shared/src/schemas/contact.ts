@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const ContactSchema = z.object({
   id: z.string(),
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Valid email required'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be 100 characters or fewer'),
+  email: z.string().email('Valid email required').max(254, 'Email is too long'),
+  message: z.string().min(10, 'Message must be at least 10 characters').max(5000, 'Message must be 5,000 characters or fewer'),
   read: z.boolean().default(false),
   createdAt: z.string().datetime(),
 });

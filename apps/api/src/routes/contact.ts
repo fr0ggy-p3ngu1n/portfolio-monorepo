@@ -19,6 +19,10 @@ app.post('/', zValidator('json', CreateContactSchema), async (c) => {
     return c.json({ ok: true, id: 'ok' }, 201);
   }
 
+  const ip = c.req.header('CF-Connecting-IP') ?? 'unknown';
+  const { success } = await c.env.CONTACT_LIMIT.limit({ key: ip });
+  if (!success) return c.json({ error: 'Too many messages. Please wait a minute and try again.' }, 429);
+
   const db = createPrismaClient(c.env.DB);
   const submission = await db.contactSubmission.create({ data });
 

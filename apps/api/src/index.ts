@@ -17,6 +17,8 @@ export type Bindings = {
   CONTACT_EMAIL: string;
   CLOUDFLARE_API_TOKEN: string;
   CLOUDFLARE_ACCOUNT_ID: string;
+  CONTACT_LIMIT: RateLimit;
+  LEADERBOARD_LIMIT: RateLimit;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();

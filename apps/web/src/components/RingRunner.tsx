@@ -72,6 +72,8 @@ export default function RingRunner({ onClose }: { onClose: () => void }) {
   const onDeathRef     = useRef<((score: number) => void) | undefined>(undefined);
   const isNameInputRef = useRef(false);
   const isHofRef       = useRef(false);
+  // Signed start-of-run ticket; the API checks the score against its age
+  const ticketRef      = useRef('');
 
   const [deadUI,     setDeadUI]     = useState<DeadUI>({ phase: 'hidden' });
   const [nameVal,    setNameVal]    = useState('');
@@ -137,7 +139,7 @@ export default function RingRunner({ onClose }: { onClose: () => void }) {
       const res  = await fetch(`${API_URL}/api/leaderboard`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name, score: deadUI.score }),
+        body:    JSON.stringify({ name, score: deadUI.score, ticket: ticketRef.current }),
       });
       const data = (await res.json()) as {
         entry: LeaderboardEntry | null;
@@ -158,6 +160,15 @@ export default function RingRunner({ onClose }: { onClose: () => void }) {
     }
   }, [deadUI, nameVal]);
 
+  // ── Run ticket ─────────────────────────────────────────────────────────────
+  const fetchTicket = useCallback(() => {
+    ticketRef.current = '';
+    fetch(`${API_URL}/api/leaderboard/start`)
+      .then((r) => r.json() as Promise<{ ticket: string }>)
+      .then(({ ticket }) => { ticketRef.current = ticket; })
+      .catch(() => { /* offline: the score just won't be accepted */ });
+  }, []);
+
   // ── jump / restart ─────────────────────────────────────────────────────────
   const jump = useCallback(() => {
     if (isNameInputRef.current || isHofRef.current) return;
@@ -165,12 +176,14 @@ export default function RingRunner({ onClose }: { onClose: () => void }) {
     const g = gsRef.current;
     if (g.phase === 'idle') {
       g.phase = 'running';
+      fetchTicket();
       return;
     }
     if (g.phase === 'dead') {
       const hi = g.hiScore;
       Object.assign(gsRef.current, fresh(hi));
       gsRef.current.phase = 'running';
+      fetchTicket();
       setDeadUI({ phase: 'hidden' });
       setNameVal('');
       return;
@@ -180,7 +193,7 @@ export default function RingRunner({ onClose }: { onClose: () => void }) {
       g.onGround = false;
       playJump();
     }
-  }, []);
+  }, [fetchTicket]);
 
   // ── render ─────────────────────────────────────────────────────────────────
   const draw = useCallback((ctx: CanvasRenderingContext2D, g: GS) => {
