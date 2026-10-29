@@ -8,6 +8,10 @@ const HIGHLIGHT = 'read-aloud';
 
 type Piece = { node: Text; start: number };
 
+// Chrome can garbage-collect an utterance mid-speech (its events then never
+// fire), so the one being spoken is kept here
+let current: SpeechSynthesisUtterance | null = null;
+
 export function sectionInView(): HTMLElement | null {
   let best: HTMLElement | null = null;
   let bestArea = 0;
@@ -75,6 +79,7 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   const synth = window.speechSynthesis;
   let timer: ReturnType<typeof setInterval> | null = null;
   let fallbackStart: ReturnType<typeof setTimeout> | null = null;
+  let startDelay: ReturnType<typeof setTimeout> | null = null;
   let done = false;
 
   const finish = () => {
@@ -82,13 +87,15 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
     done = true;
     if (timer) clearInterval(timer);
     if (fallbackStart) clearTimeout(fallbackStart);
+    if (startDelay) clearTimeout(startDelay);
+    if (current === utterance) current = null;
     mark(null);
     onEnd();
   };
 
+  const utterance = new SpeechSynthesisUtterance(text);
   if (!text.trim()) { finish(); return finish; }
 
-  const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 0.95;
   let boundaries = false;
 
@@ -113,8 +120,16 @@ export function readAloud(root: HTMLElement, onEnd: () => void): () => void {
   utterance.onend = finish;
   utterance.onerror = finish;
 
+  // Chrome and Safari drop a speak() that comes straight after cancel(), and
+  // Chrome can be left paused after a cancel, so clear, wait a beat, resume,
+  // then speak. (This is what broke reading a second time after Stop.)
   synth.cancel();
-  synth.speak(utterance);
+  current = utterance;
+  startDelay = setTimeout(() => {
+    if (done) return;
+    synth.resume();
+    synth.speak(utterance);
+  }, 150);
 
   return () => { synth.cancel(); finish(); };
 }
