@@ -29,6 +29,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm --filter web build
+        env:
+          # Shown on the homepage's live status card
+          VITE_BUILD_SHA: ${{ github.sha }}
 
       - uses: cloudflare/wrangler-action@v3
         with:

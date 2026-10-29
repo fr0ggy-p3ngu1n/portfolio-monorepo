@@ -35,4 +35,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/api
-          command: deploy
+          # Commit + time for the homepage's live status card (/api/status)
+          command: deploy --var GIT_SHA:${{ github.sha }} --var DEPLOYED_AT:${{ github.event.head_commit.timestamp }}

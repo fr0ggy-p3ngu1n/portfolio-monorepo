@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react(), tailwindcss()],
+  // Build time for the homepage's live status card (the commit comes from
+  // VITE_BUILD_SHA, set by the deploy workflow)
+  define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
   build: {
     rollupOptions: {
       output: {
