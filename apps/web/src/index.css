@@ -8,6 +8,14 @@
   font-display: swap;
   src: url('/fonts/inter-latin-var.woff2') format('woff2');
 }
+/* Reading tools: dyslexia-friendly font (OpenDyslexic, SIL OFL), only
+   downloaded when switched on */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;
@@ -272,3 +280,20 @@ html.light .name-gradient {
     inset 0 1px 0 rgba(255,182,220, 0.22),
     inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
+
+/* Reading tools (components/ReadingTools.tsx) */
+/* Content only: the header keeps Inter so its compact nav doesn't wrap.
+   OpenDyslexic is already wide, so no extra letter spacing. */
+html.font-dyslexic :is(main, footer),
+html.font-dyslexic :is(main, footer) * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: normal !important;
+}
+html.font-dyslexic :is(main, footer) :is(code, pre, .font-mono) {
+  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+}
+::highlight(read-aloud) {
+  background-color: rgba(236, 72, 153, 0.35);
+  color: inherit;
+}
+

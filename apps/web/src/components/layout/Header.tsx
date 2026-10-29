@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useReadingTools } from '../../context/ReadingToolsContext';
 import { useTheme } from '../../context/ThemeContext';
 import { smoothScrollTo } from '../../lib/smoothScroll';
 import { RESUME_URL } from '../../lib/api';
@@ -20,6 +21,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen]   = useState(false);
   const [activeId, setActiveId]   = useState('');
   const { theme, toggle }         = useTheme();
+  const { panelOpen, setPanelOpen } = useReadingTools();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -108,6 +110,17 @@ export default function Header() {
               }}
             />
           </motion.a>
+          <button
+            type="button"
+            data-reading-tools-opener
+            onClick={() => setPanelOpen(!panelOpen)}
+            aria-expanded={panelOpen}
+            aria-label="Reading tools"
+            title="Reading tools"
+            className="glass flex items-center justify-center w-8 h-8 rounded-full cursor-pointer focus-visible:outline-2 focus-visible:outline-pink-400"
+          >
+            <Icon name="book" size={15} />
+          </button>
           <motion.button
             onClick={toggle}
             className="glass-accent flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold cursor-pointer"
@@ -219,6 +232,15 @@ export default function Header() {
                 <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={16} />
                 {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </motion.button>
+              <button
+                type="button"
+                data-reading-tools-opener
+                onClick={() => { setPanelOpen(true); setMenuOpen(false); }}
+                className="py-3 text-sm font-medium text-tx-secondary hover:text-tx-primary transition-colors flex items-center gap-2 text-left cursor-pointer border-t border-bd-secondary"
+              >
+                <Icon name="book" size={16} />
+                Reading tools
+              </button>
             </nav>
           </motion.div>
         )}

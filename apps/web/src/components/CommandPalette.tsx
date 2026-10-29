@@ -4,6 +4,8 @@ import { smoothScrollTo } from '../lib/smoothScroll';
 import { useTheme } from '../context/ThemeContext';
 import { RESUME_URL } from '../lib/api';
 import Icon, { type IconName } from './Icon';
+import { useReadingTools } from '../context/ReadingToolsContext';
+import { readingToolsAction } from './ReadingTools';
 
 type Item = {
   group: string;
@@ -19,6 +21,7 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const { theme, toggle } = useTheme();
+  const rt = useReadingTools();
 
   const close = () => { setOpen(false); setQuery(''); };
   const nav = (id: string) => { smoothScrollTo(id); close(); };
@@ -43,6 +46,9 @@ export default function CommandPalette() {
       label: `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`,
       action: () => { toggle(); close(); },
     },
+    { group: 'Reading tools', icon: 'book', label: rt.reading ? 'Stop reading aloud' : 'Read this section aloud', action: () => { readingToolsAction(rt.reading ? 'stop' : 'read'); close(); } },
+    { group: 'Reading tools', icon: 'book', label: `${rt.ruler ? 'Turn off' : 'Turn on'} the reading ruler`, action: () => { rt.toggleRuler(); close(); } },
+    { group: 'Reading tools', icon: 'book', label: `${rt.dyslexic ? 'Turn off' : 'Turn on'} the dyslexia-friendly font`, action: () => { rt.toggleDyslexic(); close(); } },
   ];
 
   const filtered = query.trim()
