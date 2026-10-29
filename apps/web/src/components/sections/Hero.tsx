@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { smoothScrollTo } from '../../lib/smoothScroll';
+import Portrait from '../Portrait';
 
 const NAME_WORDS = ['Matthew', 'Sullivan'];
 
@@ -143,9 +144,16 @@ export default function Hero() {
       {/* Parallax content */}
       <motion.div
         style={parallax ? { y, opacity } : undefined}
-        className="max-w-6xl mx-auto px-6 py-24 md:py-32 w-full grid gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-center"
+        className="max-w-6xl mx-auto px-6 py-24 md:py-32 w-full grid gap-12 lg:gap-y-0 lg:grid-cols-[minmax(0,1fr)_20rem] lg:grid-rows-[1fr_auto_auto_1fr] lg:items-center"
       >
-        <div className="max-w-3xl">
+        {/* Phones: portrait first. Desktop: portrait and Now card stacked and
+            centred together in the right column (rows 2–3; rows 1 and 4 absorb
+            the extra height) */}
+        <div className="lg:col-start-2 lg:row-start-2 lg:mb-3">
+          <Portrait />
+        </div>
+
+        <div className="max-w-3xl lg:col-start-1 lg:row-start-1 lg:row-span-4">
 
           <motion.p
             className="text-lg font-medium text-tx-secondary mb-3 tracking-wide"
@@ -273,7 +281,9 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <NowCard />
+        <div className="lg:col-start-2 lg:row-start-3">
+          <NowCard />
+        </div>
       </motion.div>
 
       {/* Scroll indicator */}
