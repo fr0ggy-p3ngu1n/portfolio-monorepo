@@ -1,0 +1,139 @@
+import { Hono } from 'hono';
+import type { Bindings } from '../index';
+
+// Live data for the homepage "Shipping activity" card: the GitHub contribution
+// calendar plus the latest commits across every public repo committed to in
+// the last year (private repos are left out entirely, names included).
+//
+// Answers are cached at the edge for 10 minutes, so visitors never reach
+// GitHub directly and the card stays current without a site deploy. Reading
+// contributions needs a token: GITHUB_TOKEN is a fine-grained token with
+// read-only access to public repositories. The web build still bakes a
+// fallback snapshot (apps/web/scripts/activity.mjs, same shape) for when this
+// route can't reach GitHub.
+
+const LOGIN = 'fr0ggy-p3ngu1n';
+const TTL_SECONDS = 600;
+// Failures are cached briefly too, so an outage can't turn every request
+// into fresh GitHub calls
+const ERROR_TTL_SECONDS = 60;
+// Each repo is one GitHub request on a cache miss, so cap them. GitHub lists
+// repos by commit count this year, busiest first.
+const MAX_REPOS = 20;
+const COMMIT_URL = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/commit\/[0-9a-f]{40}$/;
+
+type Commit = { repo: string; message: string; sha: string; url: string; date: string };
+
+const app = new Hono<{ Bindings: Bindings }>();
+
+app.get('/', async (c) => {
+  const ip = c.req.header('CF-Connecting-IP') ?? 'unknown';
+  const { success } = await c.env.ACTIVITY_LIMIT.limit({ key: ip });
+  if (!success) return c.json({ error: 'Slow down' }, 429);
+
+  // One cache entry for everyone: the query string is ignored, so it can't be
+  // used to force fresh GitHub calls
+  const cacheKey = new Request(new URL('/api/activity', c.req.url).toString(), { method: 'GET' });
+  const cache = caches.default;
+  const hit = await cache.match(cacheKey);
+  if (hit) return hit;
+
+  const token = c.env.GITHUB_TOKEN;
+  if (!token) return c.json({ error: 'Activity is not configured' }, 503);
+
+  const fail = (error: string) => {
+    const res = c.json({ error }, 502, { 'Cache-Control': `public, max-age=${ERROR_TTL_SECONDS}` });
+    c.executionCtx.waitUntil(cache.put(cacheKey, res.clone()));
+    return res;
+  };
+
+  const gh = async <T>(path: string, init: RequestInit = {}): Promise<T> => {
+    const res = await fetch(`https://api.github.com${path}`, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'User-Agent': 'matthewsullivan.dev',
+        Accept: 'application/vnd.github+json',
+        ...init.headers,
+      },
+    });
+    if (!res.ok) throw new Error(`${path}: ${res.status}`);
+    return res.json() as Promise<T>;
+  };
+
+  try {
+    const { data, errors } = await gh<{
+      data: { user: { contributionsCollection: {
+        contributionCalendar: { totalContributions: number; weeks: { contributionDays: { date: string; contributionCount: number }[] }[] };
+        commitContributionsByRepository: { repository: { nameWithOwner: string; isPrivate: boolean } }[];
+      } } };
+      errors?: unknown;
+    }>('/graphql', {
+      method: 'POST',
+      body: JSON.stringify({
+        query: `query($login: String!) { user(login: $login) { contributionsCollection {
+          contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } }
+          commitContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate } }
+        } } }`,
+        variables: { login: LOGIN },
+      }),
+    });
+    if (errors) throw new Error(JSON.stringify(errors));
+
+    const collection = data.user.contributionsCollection;
+    const repos = collection.commitContributionsByRepository
+      .map((r) => r.repository)
+      .filter((r) => !r.isPrivate)
+      .map((r) => r.nameWithOwner)
+      .slice(0, MAX_REPOS);
+
+    const perRepo = await Promise.all(
+      repos.map((repo) =>
+        gh<{ sha: string; html_url: string; commit: { message: string; author: { date: string } } }[]>(
+          `/repos/${repo}/commits?author=${LOGIN}&per_page=6`,
+        )
+          .then((commits) => commits.map((cm): Commit => ({
+            repo,
+            message: cm.commit.message.split('\n')[0].slice(0, 120),
+            sha: cm.sha.slice(0, 7),
+            url: COMMIT_URL.test(cm.html_url) ? cm.html_url : `https://github.com/${repo}`,
+            date: cm.commit.author.date,
+          })))
+          .catch(() => [] as Commit[]),
+      ),
+    );
+    // Newest first, at most two per repo, so one busy repo doesn't fill the list
+    const perRepoCount = new Map<string, number>();
+    const recent = perRepo
+      .flat()
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .filter((cm) => {
+        const n = perRepoCount.get(cm.repo) ?? 0;
+        perRepoCount.set(cm.repo, n + 1);
+        return n < 2;
+      })
+      .slice(0, 6);
+
+    const res = c.json(
+      {
+        generatedAt: new Date().toISOString(),
+        total: collection.contributionCalendar.totalContributions,
+        // weeks[w][d] = { date, count }, Sunday first, oldest week first
+        weeks: collection.contributionCalendar.weeks.map((w) =>
+          w.contributionDays.map((d) => ({ date: d.date, count: d.contributionCount })),
+        ),
+        recent,
+      },
+      200,
+      { 'Cache-Control': `public, max-age=${TTL_SECONDS}` },
+    );
+    c.executionCtx.waitUntil(cache.put(cacheKey, res.clone()));
+    return res;
+  } catch (err) {
+    // Only the request path and status reach the log (see gh above), never the token
+    console.error('activity:', err instanceof Error ? err.message : 'unknown error');
+    return fail('GitHub is unavailable');
+  }
+});
+
+export default app;

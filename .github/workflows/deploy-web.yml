@@ -9,7 +9,7 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/deploy-web.yml'
-  # Daily rebuild so the playground's GitHub activity grid stays current
+  # Daily rebuild keeps the activity card's fallback snapshot (activity.json) fresh; the card itself is live from /api/activity
   schedule:
     - cron: '17 9 * * *'
   workflow_dispatch:

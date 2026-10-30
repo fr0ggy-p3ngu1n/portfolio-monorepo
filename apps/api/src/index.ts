@@ -8,6 +8,7 @@ import ogRoutes          from './routes/og';
 import leaderboardRoutes from './routes/leaderboard';
 import analyticsRoutes   from './routes/analytics';
 import statusRoutes      from './routes/status';
+import activityRoutes    from './routes/activity';
 
 export type Bindings = {
   DB: D1Database;
@@ -22,6 +23,9 @@ export type Bindings = {
   LEADERBOARD_LIMIT: RateLimit;
   STATUS_LIMIT: RateLimit;
   OG_LIMIT: RateLimit;
+  ACTIVITY_LIMIT: RateLimit;
+  // Fine-grained GitHub token, public repositories read-only (routes/activity.ts)
+  GITHUB_TOKEN?: string;
   // Set by the deploy workflow (wrangler deploy --var)
   GIT_SHA?: string;
   DEPLOYED_AT?: string;
@@ -41,5 +45,6 @@ app.route('/api/og',          ogRoutes);
 app.route('/api/leaderboard', leaderboardRoutes);
 app.route('/api/analytics',   analyticsRoutes);
 app.route('/api/status',      statusRoutes);
+app.route('/api/activity',    activityRoutes);
 
 export default app;

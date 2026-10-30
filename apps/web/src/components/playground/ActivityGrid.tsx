@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 // GitHub contribution calendar + latest commits across all public repos
-// (org repos shown as org/repo, personal ones by name). The data is fetched
-// by the deploy workflow (scripts/activity.mjs) and served as /activity.json,
-// refreshed daily, so visitors never hit GitHub's rate limits.
+// (org repos shown as org/repo, personal ones by name). Live from the API
+// (/api/activity, cached 10 minutes at the edge), so it updates without a
+// deploy. If that fails, the snapshot baked in at build time
+// (scripts/activity.mjs → /activity.json) is shown instead.
 
 type Day = { date: string; count: number };
 type Commit = { repo: string; message: string; sha: string; url: string; date: string };
@@ -40,8 +41,13 @@ export default function ActivityGrid() {
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('/activity.json')
-      .then((r) => r.json() as Promise<Activity>)
+    const load = (url: string) =>
+      fetch(url).then((r) => {
+        if (!r.ok) throw new Error(`${url}: ${r.status}`);
+        return r.json() as Promise<Activity>;
+      });
+    load(`${import.meta.env.VITE_API_URL ?? ''}/api/activity`)
+      .catch(() => load('/activity.json'))
       .then((d) => (d.weeks.length ? setData(d) : setMissing(true)))
       .catch(() => setMissing(true));
   }, []);
@@ -103,7 +109,7 @@ export default function ActivityGrid() {
           <ul className="divide-y divide-bd-primary/60">
             {data.recent.map((c) => (
               <li key={c.repo + c.sha} className="py-2 flex items-baseline gap-3 min-w-0 text-sm">
-                <a href={c.url} target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-tx-accent shrink-0 hover:underline">{c.sha}</a>
+                <a href={c.url.startsWith('https://github.com/') ? c.url : 'https://github.com/fr0ggy-p3ngu1n'} target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-tx-accent shrink-0 hover:underline">{c.sha}</a>
                 <span className="text-tx-primary truncate min-w-0 flex-1">{c.message}</span>
                 <span className="text-xs text-tx-muted shrink-0 hidden sm:inline">{c.repo.replace(/^fr0ggy-p3ngu1n\//, '')}</span>
                 <span className="text-xs text-tx-muted shrink-0">{ago(c.date)}</span>

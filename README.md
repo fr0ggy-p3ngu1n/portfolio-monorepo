@@ -33,7 +33,7 @@ portfolio/
 ├── apps/
 │   ├── web/               # React SPA (Cloudflare Pages)
 │   │   ├── scripts/prerender.mjs  # Build-time render of the homepage (runs after vite build)
-│   │   ├── scripts/activity.mjs   # GitHub contribution calendar + latest commits → public/activity.json (CI only)
+│   │   ├── scripts/activity.mjs   # Fallback snapshot of the activity card → public/activity.json (CI only)
 │   │   ├── wasm/                  # leds.c (LED "firmware") + build.sh → public/leds.wasm
 │   │   ├── public/                # Favicons, fonts, og-image.png, portrait/, leds.wasm, _headers, _redirects, /brand page
 │   │   └── src/
@@ -58,7 +58,7 @@ portfolio/
 │   └── api/               # Hono REST API (Cloudflare Workers)
 │       └── src/
 │           ├── middleware/        # CORS, adminAuth (JWT guard)
-│           └── routes/            # auth, projects, contact, resume, og, leaderboard, analytics, status
+│           └── routes/            # auth, projects, contact, resume, og, leaderboard, analytics, status, activity
 │       └── migrations/            # D1 schema migrations (0001–0005)
 └── packages/
     └── shared/            # Zod schemas + TypeScript types (consumed by both apps)
@@ -77,7 +77,7 @@ portfolio/
 - **Playground** — three live demos after Projects:
   - *Link-preview card maker*: type a title and the Worker renders a 1200×630 card with satori + resvg, showing the round trip and edge-cache hit/miss
   - *Firmware in your browser*: a 32×8 LED matrix driven by C written like microcontroller code (no libc, no malloc, fixed timestep), compiled to a 2.7 KB WebAssembly module; four patterns, click LEDs to draw Game of Life cells
-  - *Shipping activity*: the GitHub contribution calendar and the latest commits across every public repo committed to in the last year (at most two per repo; private repos left out), rebuilt daily by the deploy workflow
+  - *Shipping activity*: the GitHub contribution calendar and the latest commits across every public repo committed to in the last year (at most two per repo; private repos left out), live from `/api/activity` so it updates without a deploy by the deploy workflow
 - **Try it live** — project cards can link straight to a project's interactive demo (`demoUrl` / `demoLabel`, editable in the admin)
 - **Reading tools** — from ClearPath: a reading ruler, a dyslexia-friendly font (self-hosted OpenDyslexic, content only), and read-aloud of the section in view with word highlighting via the CSS Custom Highlight API; settings persist (header book icon, mobile menu, ⌘K; `components/ReadingTools.tsx`, `lib/readAloud.ts`). Speech is queued one phrase at a time; in Firefox (macOS) `speechSynthesis.cancel()` jams the engine until reload, so Stop there lets the current short phrase finish while the highlight follows it. Add `?debug-speech` to the URL to log every speech step to the console
 - **Goose** — hover or tap the Cat Dad card for photos of my cat
@@ -205,7 +205,7 @@ pnpm dev
 
 Pushing to `main` deploys automatically with GitHub Actions: `.github/workflows/deploy-web.yml` builds and pre-renders the site and deploys it to Cloudflare Pages, and `deploy-api.yml` deploys the Worker. Each only runs when its app (or `packages/`) changes.
 
-- **Web:** before building, `scripts/activity.mjs` fetches the GitHub contribution calendar with the workflow's own `GITHUB_TOKEN` and writes `public/activity.json` (gitignored; the previous file is kept if GitHub is down). The workflow also runs daily and from the Actions tab (`workflow_dispatch`) to keep that grid current. `VITE_BUILD_SHA` is passed in for the live card.
+- **Web:** before building, `scripts/activity.mjs` fetches the GitHub contribution calendar with the workflow's own `GITHUB_TOKEN` and writes `public/activity.json` (gitignored; the previous file is kept if GitHub is down). That file is only the activity card's fallback; the card itself reads `/api/activity`. `VITE_BUILD_SHA` is passed in for the live card.
 - **API:** deployed with `--var GIT_SHA` and `--var DEPLOYED_AT` so `/api/status` can report the running commit.
 - **Database migrations are applied by hand**, before pushing code that reads new columns: `pnpm --filter api db:migrate:remote`. The homepage is pre-rendered from the live API, so if a site build lands before the API deploy, re-run **Deploy Web** from the Actions tab.
 - **WebAssembly:** `public/leds.wasm` is committed. Rebuild it after editing `wasm/leds.c` with `apps/web/wasm/build.sh` (needs `brew install llvm lld`).
@@ -229,6 +229,7 @@ wrangler secret put RESEND_API_KEY
 wrangler secret put CONTACT_EMAIL
 wrangler secret put CLOUDFLARE_API_TOKEN    # Analytics read, for /api/analytics
 wrangler secret put CLOUDFLARE_ACCOUNT_ID
+wrangler secret put GITHUB_TOKEN            # fine-grained, public repositories read-only, no permissions; for /api/activity
 ```
 
 The custom domain is set in `apps/api/wrangler.toml` (`routes`, `custom_domain = true`); the `workers.dev` URL is off.
@@ -280,6 +281,17 @@ On any error the route issues a 302 to the static `/og-image.png` fallback on Cl
 
 ### Live status card (`LiveStatus.tsx`, `routes/status.ts`)
 Every number is measured on the request: `request.cf.colo` for the data centre, a timed `SELECT` against D1 (Workers clocks only advance across I/O, which is what's being timed), and the deployed commit from `GIT_SHA`. The browser measures the round trip itself. GitHub Actions runs are fetched **from the browser**, not the Worker: unauthenticated GitHub API calls are limited per IP, and Cloudflare's shared egress IPs are always over that limit.
+
+### Shipping activity card (`ActivityGrid.tsx`, `routes/activity.ts`)
+`GET /api/activity` reads the contribution calendar and latest public commits from GitHub with `GITHUB_TOKEN`, a fine-grained token with public read-only access that never leaves the Worker. Hardening:
+- It takes no input: the GitHub login is fixed and the query string is ignored.
+- One cached answer for everyone (10 minutes); failures are cached for 60 seconds, so an outage can't turn traffic into GitHub calls.
+- Rate limited to 30 requests a minute per IP (`ACTIVITY_LIMIT`, namespace 2006).
+- At most 20 repos are read per refresh.
+- Private repos are dropped by name.
+- Commit links must be `https://github.com/…/commit/<sha>`; the card checks this again before rendering them.
+
+If the route fails, the card falls back to the build-time `/activity.json`. The token expires after a year; make a new one the same way and `wrangler secret put GITHUB_TOKEN`.
 
 ### LED firmware (`apps/web/wasm/leds.c`)
 Freestanding C (`-nostdlib -ffreestanding`, one 64 KB memory page, 8 KB stack): a framebuffer of one brightness byte per LED, a fixed 16 ms timestep, xorshift randomness, and a 5×7 font table holding only the glyphs it needs. The page calls `tick(elapsedMs)` every animation frame and draws the framebuffer straight out of WebAssembly memory. It pauses off screen and starts paused with reduced motion.
