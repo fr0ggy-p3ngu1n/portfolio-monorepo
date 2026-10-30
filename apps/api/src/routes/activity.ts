@@ -22,6 +22,8 @@ const ERROR_TTL_SECONDS = 60;
 const MAX_REPOS = 20;
 const COMMIT_URL = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/commit\/[0-9a-f]{40}$/;
 
+const isCorsHeader = (name: string) => name.startsWith('access-control-') || name === 'vary';
+
 type Commit = { repo: string; message: string; sha: string; url: string; date: string };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -36,16 +38,29 @@ app.get('/', async (c) => {
   const cacheKey = new Request(new URL('/api/activity', c.req.url).toString(), { method: 'GET' });
   const cache = caches.default;
   const hit = await cache.match(cacheKey);
-  if (hit) return hit;
+  // Rebuilt through c.body so the CORS middleware's headers for *this*
+  // request's Origin are applied; cached copies shouldn't carry any (see store)
+  if (hit) {
+    const headers = Object.fromEntries([...hit.headers].filter(([name]) => !isCorsHeader(name)));
+    return c.body(await hit.text(), hit.status as 200 | 502, headers);
+  }
 
   const token = c.env.GITHUB_TOKEN;
   if (!token) return c.json({ error: 'Activity is not configured' }, 503);
 
-  const fail = (error: string) => {
-    const res = c.json({ error }, 502, { 'Cache-Control': `public, max-age=${ERROR_TTL_SECONDS}` });
-    c.executionCtx.waitUntil(cache.put(cacheKey, res.clone()));
+  // Cache without CORS headers: they depend on the requesting Origin, and a
+  // copy cached from a request with no Origin would block the site's fetches
+  const store = (res: Response) => {
+    const copy = new Response(res.clone().body, res);
+    for (const name of [...copy.headers.keys()]) {
+      if (isCorsHeader(name)) copy.headers.delete(name);
+    }
+    c.executionCtx.waitUntil(cache.put(cacheKey, copy));
     return res;
   };
+
+  const fail = (error: string) =>
+    store(c.json({ error }, 502, { 'Cache-Control': `public, max-age=${ERROR_TTL_SECONDS}` }));
 
   const gh = async <T>(path: string, init: RequestInit = {}): Promise<T> => {
     const res = await fetch(`https://api.github.com${path}`, {
@@ -127,8 +142,7 @@ app.get('/', async (c) => {
       200,
       { 'Cache-Control': `public, max-age=${TTL_SECONDS}` },
     );
-    c.executionCtx.waitUntil(cache.put(cacheKey, res.clone()));
-    return res;
+    return store(res);
   } catch (err) {
     // Only the request path and status reach the log (see gh above), never the token
     console.error('activity:', err instanceof Error ? err.message : 'unknown error');
