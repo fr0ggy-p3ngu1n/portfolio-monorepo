@@ -41,12 +41,18 @@ app.get('/', async (c) => {
   // used to force fresh GitHub calls
   const cacheKey = new Request(new URL('/api/activity', c.req.url).toString(), { method: 'GET' });
   const cache = caches.default;
-  const hit = await cache.match(cacheKey);
+  const cached = await cache.match(cacheKey);
+  // Expiry is checked here, not left to the cache: Cloudflare applies its own
+  // zone TTLs (hours) to entries, so max-age alone kept serving stale data
+  const storedAt = Number(cached?.headers.get('x-stored-at'));
+  const maxAge = (cached?.ok ? TTL_SECONDS : ERROR_TTL_SECONDS) * 1000;
+  const hit = cached && storedAt && Date.now() - storedAt < maxAge ? cached : undefined;
   // Rebuilt through c.body so the CORS middleware's headers for *this*
   // request's Origin are applied; cached copies shouldn't carry any (see store)
   if (hit) {
     const headers = Object.fromEntries([...hit.headers].filter(([name]) => !isCorsHeader(name)));
     headers['cache-control'] = `public, max-age=${BROWSER_TTL_SECONDS}`;
+    delete headers['x-stored-at'];
     return c.body(await hit.text(), hit.status as 200 | 502, headers);
   }
 
@@ -60,6 +66,7 @@ app.get('/', async (c) => {
     for (const name of [...copy.headers.keys()]) {
       if (isCorsHeader(name)) copy.headers.delete(name);
     }
+    copy.headers.set('x-stored-at', String(Date.now()));
     c.executionCtx.waitUntil(cache.put(cacheKey, copy));
     res.headers.set('Cache-Control', `public, max-age=${BROWSER_TTL_SECONDS}`);
     return res;
