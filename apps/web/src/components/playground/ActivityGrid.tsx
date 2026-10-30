@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 // GitHub contribution calendar + latest commits across all public repos
 // (org repos shown as org/repo, personal ones by name). Live from the API
-// (/api/activity, cached 10 minutes at the edge), so it updates without a
+// (/api/activity, cached 5 minutes at the edge), so it updates without a
 // deploy. If that fails, the snapshot baked in at build time
 // (scripts/activity.mjs → /activity.json) is shown instead.
 

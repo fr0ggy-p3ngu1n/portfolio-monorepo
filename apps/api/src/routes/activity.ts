@@ -5,7 +5,7 @@ import type { Bindings } from '../index';
 // calendar plus the latest commits across every public repo committed to in
 // the last year (private repos are left out entirely, names included).
 //
-// Answers are cached at the edge for 10 minutes, so visitors never reach
+// Answers are cached at the edge for 5 minutes (browsers for 1), so visitors never reach
 // GitHub directly and the card stays current without a site deploy. Reading
 // contributions needs a token: GITHUB_TOKEN is a fine-grained token with
 // read-only access to public repositories. The web build still bakes a
@@ -13,7 +13,11 @@ import type { Bindings } from '../index';
 // route can't reach GitHub.
 
 const LOGIN = 'fr0ggy-p3ngu1n';
-const TTL_SECONDS = 600;
+// How long the edge cache keeps an answer. Browsers get BROWSER_TTL_SECONDS
+// instead, set explicitly: on a cache hit Cloudflare rewrites Cache-Control to
+// the zone's Browser Cache TTL (4 hours), which kept the card stale for hours.
+const TTL_SECONDS = 300;
+const BROWSER_TTL_SECONDS = 60;
 // Failures are cached briefly too, so an outage can't turn every request
 // into fresh GitHub calls
 const ERROR_TTL_SECONDS = 60;
@@ -42,6 +46,7 @@ app.get('/', async (c) => {
   // request's Origin are applied; cached copies shouldn't carry any (see store)
   if (hit) {
     const headers = Object.fromEntries([...hit.headers].filter(([name]) => !isCorsHeader(name)));
+    headers['cache-control'] = `public, max-age=${BROWSER_TTL_SECONDS}`;
     return c.body(await hit.text(), hit.status as 200 | 502, headers);
   }
 
@@ -56,6 +61,7 @@ app.get('/', async (c) => {
       if (isCorsHeader(name)) copy.headers.delete(name);
     }
     c.executionCtx.waitUntil(cache.put(cacheKey, copy));
+    res.headers.set('Cache-Control', `public, max-age=${BROWSER_TTL_SECONDS}`);
     return res;
   };
 

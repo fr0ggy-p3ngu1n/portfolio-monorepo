@@ -285,7 +285,7 @@ Every number is measured on the request: `request.cf.colo` for the data centre, 
 ### Shipping activity card (`ActivityGrid.tsx`, `routes/activity.ts`)
 `GET /api/activity` reads the contribution calendar and latest public commits from GitHub with `GITHUB_TOKEN`, a fine-grained token with public read-only access that never leaves the Worker. Hardening:
 - It takes no input: the GitHub login is fixed and the query string is ignored.
-- One cached answer for everyone (10 minutes); failures are cached for 60 seconds, so an outage can't turn traffic into GitHub calls.
+- One cached answer for everyone (5 minutes at the edge, 1 minute in browsers); failures are cached for 60 seconds, so an outage can't turn traffic into GitHub calls. Browser caching is set explicitly on every response, because Cloudflare rewrites Cache-Control on cache hits to the zone's 4-hour Browser Cache TTL.
 - Rate limited to 30 requests a minute per IP (`ACTIVITY_LIMIT`, namespace 2006).
 - At most 20 repos are read per refresh.
 - Private repos are dropped by name.
