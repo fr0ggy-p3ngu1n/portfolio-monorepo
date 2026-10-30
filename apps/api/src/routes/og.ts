@@ -4,13 +4,13 @@
 //
 // Technique:
 //   1. satori/standalone  — converts a JSX-like element tree into an SVG string.
-//                           The /standalone entry requires manual yoga WASM init
-//                           (the default satori entry loads yoga via Emscripten
-//                           at runtime, which CF Workers disallows).
+//                           The /standalone entry requires manual layout WASM
+//                           init (the default entry loads it at runtime, which
+//                           CF Workers disallows).
 //   2. @cf-wasm/resvg     — Cloudflare-Workers-compatible resvg; /workerd entry
 //                           bundles its WASM at build time via Wrangler.
 //
-// Both WASM modules (yoga + resvg) are bundled at build time by Wrangler's
+// Both WASM modules (satori's layout engine + resvg) are bundled at build time by Wrangler's
 // [[rules]] CompiledWasm entry in wrangler.toml and imported as
 // WebAssembly.Module instances. Cloudflare Workers allows
 // WebAssembly.instantiate(module, imports) for pre-compiled modules but
@@ -25,11 +25,15 @@
 
 import { Hono } from 'hono';
 // satori/standalone requires manual yoga init — does not auto-load WASM
-import satori, { init as initYoga } from 'satori/standalone';
+import satori, { init as initLayout } from 'satori/standalone';
 // @cf-wasm/resvg/workerd bundles resvg WASM at module load time automatically
 import { Resvg, initResvg } from '@cf-wasm/resvg/workerd';
 // yoga.wasm is the WASM binary extracted from yoga-layout (same package that
 // satori depends on internally). Bundled by Wrangler as a CompiledWasm module.
+// Stay on satori 0.19: from 0.33.5 it loads a harfbuzz text shaper at runtime
+// in a way Workers can't run. Its SVG-escaping advisory (GHSA-wx4j-mvgx-mqwp)
+// doesn't reach us: the SVG only ever goes to resvg, visitors get the PNG, and
+// text is drawn as glyph paths (checked with injection payloads, 2026-10-30).
 // @ts-expect-error — .wasm imports resolved by Wrangler's CompiledWasm rule
 import yogaWasm from '../yoga.wasm';
 import type { Bindings } from '../index';
@@ -45,10 +49,10 @@ let fontRegular: ArrayBuffer;
 async function ensureInit() {
   if (ready) return;
 
-  // 1. Initialize yoga layout engine (satori/standalone requires this)
+  // 1. Initialize the layout engine (satori/standalone requires this)
   //    yogaWasm is a pre-compiled WebAssembly.Module from Wrangler — CF Workers
   //    allows WebAssembly.instantiate(module, imports) for pre-compiled modules.
-  await initYoga(yogaWasm);
+  await initLayout(yogaWasm);
 
   // 2. Fetch Inter font files and wait for resvg WASM to be ready in parallel.
   //    jsDelivr CDN caches aggressively so font fetches are fast after cold-start.
@@ -267,6 +271,18 @@ app.get('/card', async (c) => {
 
 // ── Route ──────────────────────────────────────────────────────────────────────
 app.get('/', async (c) => {
+  // The image never changes between deploys, so render it once per data
+  // centre and serve it from the edge cache after that. Query strings are
+  // ignored so they can't force fresh renders.
+  const key = new Request(new URL('/api/og', c.req.url).toString());
+  const cache = caches.default;
+  const hit = await cache.match(key);
+  if (hit) return new Response(hit.body, hit);
+
+  const ip = c.req.header('CF-Connecting-IP') ?? 'unknown';
+  const { success } = await c.env.OG_LIMIT.limit({ key: ip });
+  if (!success) return c.redirect('https://matthewsullivan.dev/og-image.png', 302);
+
   try {
     await ensureInit();
 
@@ -287,7 +303,7 @@ app.get('/', async (c) => {
     const resvg = await Resvg.async(svg, { fitTo: { mode: 'width', value: 1200 } });
     const png   = resvg.render().asPng();
 
-    return new Response(png, {
+    const res = new Response(png, {
       status: 200,
       headers: {
         'Content-Type':  'image/png',
@@ -295,6 +311,8 @@ app.get('/', async (c) => {
         'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
       },
     });
+    c.executionCtx.waitUntil(cache.put(key, res.clone()));
+    return res;
   } catch (err) {
     // On any failure, redirect to the static fallback so social cards still work
     console.error('[og] generation failed:', err);

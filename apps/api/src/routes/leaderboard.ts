@@ -14,19 +14,24 @@ const app = new Hono<{ Bindings: Bindings }>();
 const POINTS_PER_SECOND = 10;
 const TICKET_MAX_AGE_S  = 2 * 60 * 60;
 
-async function sign(secret: string, message: string): Promise<string> {
-  const key = await crypto.subtle.importKey(
-    'raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
+const hmacKey = (secret: string) =>
+  crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify'],
   );
-  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message)));
+
+async function sign(secret: string, message: string): Promise<string> {
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', await hmacKey(secret), new TextEncoder().encode(message)));
   return btoa(String.fromCharCode(...mac)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 async function ticketAge(secret: string, ticket: string): Promise<number | null> {
   const [ts, mac] = ticket.split('.');
   const started = Number(ts);
-  if (!Number.isInteger(started) || !mac) return null;
-  if (mac !== await sign(secret, `ringrunner:${ts}`)) return null;
+  if (!Number.isInteger(started) || !mac || !/^[\w-]{43}$/.test(mac)) return null;
+  // crypto.subtle.verify compares in constant time, unlike comparing strings
+  const raw = Uint8Array.from(atob(mac.replace(/-/g, '+').replace(/_/g, '/') + '='), (ch) => ch.charCodeAt(0));
+  const ok = await crypto.subtle.verify('HMAC', await hmacKey(secret), raw, new TextEncoder().encode(`ringrunner:${ts}`));
+  if (!ok) return null;
   const age = Date.now() / 1000 - started;
   return age >= 0 && age <= TICKET_MAX_AGE_S ? age : null;
 }

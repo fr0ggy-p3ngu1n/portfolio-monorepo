@@ -32,7 +32,8 @@ app.post('/', zValidator('json', CreateContactSchema), async (c) => {
     await resend.emails.send({
       from: 'Portfolio <onboarding@resend.dev>',
       to: c.env.CONTACT_EMAIL,
-      subject: `[matthewsullivan.dev] New message from ${data.name}`,
+      // Control characters (CR/LF) stripped so a name can't add headers or lines
+      subject: `[matthewsullivan.dev] New message from ${data.name.replace(/[\u0000-\u001f\u007f]/g, ' ')}`,
       text: [
         '─────────────────────────────────',
         ' New contact form submission',

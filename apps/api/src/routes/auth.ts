@@ -8,7 +8,7 @@ import type { Bindings } from '../index';
 const app = new Hono<{ Bindings: Bindings }>();
 
 const loginSchema = z.object({
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, 'Password is required').max(256, 'Password is too long'),
 });
 
 const MAX_ATTEMPTS = 5;

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { secureHeaders } from 'hono/secure-headers';
 import { cors } from './middleware/cors';
 import authRoutes from './routes/auth';
 import projectRoutes from './routes/projects';
@@ -34,6 +35,9 @@ export type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.use('*', cors);
+// nosniff, frame-deny, etc. CORP stays cross-origin: the site, link-preview
+// crawlers and other sites load the OG images and resume from this origin
+app.use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }));
 
 app.get('/api/health', (c) => c.json({ ok: true }));
 
