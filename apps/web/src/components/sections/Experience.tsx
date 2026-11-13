@@ -19,7 +19,7 @@ const JOBS: Job[] = [
     company: 'EHMA.ai',
     location: 'Tempe, AZ',
     period: 'January 2026 – Present',
-    url: 'https://www.linkedin.com/company/ehma-ai/posts/?feedView=all',
+    url: 'https://www.ehma.ai/',
     roles: [
       {
         title: 'Full-Stack Developer',
