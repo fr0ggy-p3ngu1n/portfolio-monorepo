@@ -208,7 +208,7 @@ export default function Hero() {
             <p>
               At{' '}
               <a
-                href="https://www.linkedin.com/company/ehma-ai/home/"
+                href="https://www.ehma.ai/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-tx-accent hover:underline"
